@@ -12,6 +12,7 @@
 body {
   margin: 0;
   background: #f7f5f2;
+  font-size: 16px;
 }
 
 a {
@@ -26,7 +27,7 @@ a {
 .hero,
 .section,
 .final-cta {
-  padding: 80px max(24px, calc((100vw - 1180px) / 2));
+  padding: 88px max(24px, calc((100vw - 1180px) / 2));
 }
 
 .hero {
@@ -34,7 +35,7 @@ a {
   display: grid;
   min-height: 92vh;
   grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
-  gap: 48px;
+  gap: 56px;
   align-items: center;
   color: #fff;
   background:
@@ -65,7 +66,7 @@ a {
 
 .hero h1 {
   max-width: 760px;
-  font-size: clamp(4rem, 12vw, 8.8rem);
+  font-size: clamp(3.8rem, 11vw, 8.8rem);
 }
 
 .hero-edition {
@@ -92,7 +93,7 @@ a {
 .hero-copy {
   max-width: 720px;
   color: #d6cbc2;
-  font-size: 1rem;
+  font-size: 1.06rem;
   line-height: 1.75;
 }
 
@@ -116,26 +117,50 @@ a {
 .hero-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 18px;
+  gap: 14px 18px;
   align-items: center;
 }
 
 .hero-actions span {
   max-width: 440px;
   color: #d6cbc2;
-  font-size: 0.94rem;
+  font-size: 1rem;
+  line-height: 1.55;
+}
+
+.hero-actions small,
+.scarcity-note,
+.cta-support,
+.hero-note {
+  color: #d6cbc2;
+  font-size: 0.96rem;
+  line-height: 1.55;
+}
+
+.hero-note {
+  max-width: 620px;
+  margin: 18px 0 0;
 }
 
 .button {
+  border: 0;
   display: inline-flex;
-  min-height: 48px;
+  min-height: 58px;
   align-items: center;
   justify-content: center;
   border-radius: 4px;
-  padding: 0 22px;
+  padding: 0 28px;
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.96rem;
   font-weight: 800;
+  line-height: 1.2;
   text-decoration: none;
   text-transform: uppercase;
+  transition:
+    background-color 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease;
 }
 
 .button-primary {
@@ -143,9 +168,24 @@ a {
   color: #fff;
 }
 
+.button-primary:hover,
+.button-primary:focus-visible {
+  background: #e1263a;
+  box-shadow: 0 0 0 4px rgba(202, 24, 43, 0.22);
+  transform: translateY(-1px);
+}
+
 .button-secondary {
   border: 1px solid #c9182b;
   color: #c9182b;
+}
+
+.button:focus-visible,
+.modal-close:focus-visible,
+.faq-trigger:focus-visible,
+input:focus-visible {
+  outline: 3px solid rgba(202, 24, 43, 0.42);
+  outline-offset: 3px;
 }
 
 .hero-visual {
@@ -219,7 +259,7 @@ a {
 }
 
 .section-intro {
-  margin-bottom: 40px;
+  margin-bottom: 46px;
 }
 
 .section h2,
@@ -264,6 +304,10 @@ details {
   background: rgba(255, 255, 255, 0.74);
 }
 
+.section-action {
+  margin-top: 28px;
+}
+
 .section-dark .program-block {
   border-color: rgba(255, 255, 255, 0.14);
   background: rgba(255, 255, 255, 0.06);
@@ -285,7 +329,7 @@ details {
 .workshop-callout p,
 .price-box p,
 .group-box p,
-details p {
+.faq-answer p {
   color: #555;
   line-height: 1.65;
 }
@@ -352,15 +396,77 @@ details p {
 }
 
 .price-box {
+  display: grid;
+  gap: 10px;
   background: #fff;
   color: #171717;
 }
 
-.price-box strong {
-  display: block;
-  margin: 14px 0;
+.price-box h3 {
+  margin: 0;
+  font-size: 1.35rem;
+}
+
+.ticket-grid {
+  display: grid;
+  gap: 10px;
+}
+
+.ticket-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px 16px;
+  align-items: center;
+  border: 1px solid rgba(23, 23, 23, 0.1);
+  border-radius: 8px;
+  padding: 14px;
+  background: #fbfaf8;
+}
+
+.ticket-card h4 {
+  margin: 0;
+  color: #171717;
+  font-size: 1rem;
+  line-height: 1.25;
+}
+
+.ticket-card strong {
   color: #c9182b;
-  font-size: clamp(3rem, 7vw, 5.6rem);
+  font-size: 1.1rem;
+  white-space: nowrap;
+}
+
+.ticket-card small {
+  color: #555;
+  font-weight: 700;
+}
+
+.ticket-card a,
+.even3-inline-link {
+  color: #c9182b;
+  font-weight: 850;
+  text-decoration: none;
+}
+
+.ticket-card a {
+  justify-self: start;
+  font-size: 0.92rem;
+}
+
+.even3-inline-link {
+  display: inline-flex;
+  margin-top: 14px;
+}
+
+.ticket-badge {
+  display: inline-flex;
+  margin-top: 8px;
+  border-radius: 4px;
+  padding: 5px 8px;
+  background: #e7a33c;
+  color: #171717;
+  font-size: 0.78rem;
+  font-weight: 850;
 }
 
 .group-box {
@@ -379,34 +485,67 @@ details p {
   align-items: end;
 }
 
-.map-placeholder {
-  display: grid;
-  min-height: 280px;
-  place-content: center;
+.map-frame {
+  overflow: hidden;
   border: 1px solid rgba(23, 23, 23, 0.12);
   border-radius: 8px;
-  background:
-    linear-gradient(90deg, rgba(23, 23, 23, 0.07) 1px, transparent 1px),
-    linear-gradient(rgba(23, 23, 23, 0.07) 1px, transparent 1px),
-    #eee7df;
-  background-size: 32px 32px;
+  background: #eee7df;
   text-align: center;
 }
 
-.map-placeholder span {
-  color: #c9182b;
-  font-size: 2rem;
-  font-weight: 900;
+.map-frame iframe {
+  display: block;
+  width: 100%;
+  min-height: 320px;
+  border: 0;
+}
+
+.map-frame address {
+  margin: 0;
+  padding: 14px 18px;
+  background: #fff;
+  color: #333;
+  font-style: normal;
+  font-weight: 750;
+  line-height: 1.5;
 }
 
 .faq-list {
   display: grid;
-  gap: 12px;
+  gap: 14px;
 }
 
-summary {
+.faq-item {
+  border: 1px solid rgba(23, 23, 23, 0.1);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.74);
+  overflow: hidden;
+}
+
+.faq-trigger {
+  border: 0;
+  display: flex;
+  width: 100%;
+  min-height: 64px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 18px 22px;
+  background: transparent;
+  color: #171717;
   cursor: pointer;
+  font: inherit;
   font-weight: 800;
+  text-align: left;
+}
+
+.faq-trigger span {
+  color: #c9182b;
+  font-size: 1.4rem;
+}
+
+.faq-answer {
+  padding: 0 22px 22px;
 }
 
 .final-cta {
@@ -416,6 +555,115 @@ summary {
 
 .final-cta > p {
   color: #ddd;
+}
+
+.quick-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 28px 0;
+}
+
+.quick-facts span {
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 999px;
+  padding: 10px 14px;
+  color: #fff;
+  font-weight: 750;
+}
+
+.modal-backdrop {
+  position: fixed;
+  z-index: 20;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.68);
+}
+
+.checkout-modal {
+  position: relative;
+  width: min(100%, 560px);
+  max-height: min(92vh, 760px);
+  overflow-y: auto;
+  border-radius: 8px;
+  padding: 32px;
+  background: #fff;
+  color: #171717;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.34);
+}
+
+.checkout-modal h2 {
+  margin: 0 36px 14px 0;
+  font-size: clamp(1.8rem, 5vw, 2.6rem);
+  line-height: 1.05;
+}
+
+.checkout-modal p {
+  color: #4c4c4c;
+  line-height: 1.65;
+}
+
+.modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  border: 0;
+  display: grid;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  border-radius: 50%;
+  background: #f1ece6;
+  color: #171717;
+  cursor: pointer;
+  font-size: 1.6rem;
+  line-height: 1;
+}
+
+.checkout-form {
+  display: grid;
+  gap: 16px;
+  margin-top: 22px;
+}
+
+.checkout-form label {
+  display: grid;
+  gap: 7px;
+  font-weight: 800;
+}
+
+.checkout-form input[type="text"],
+.checkout-form input[type="tel"],
+.checkout-form input[type="email"] {
+  width: 100%;
+  min-height: 50px;
+  border: 1px solid rgba(23, 23, 23, 0.18);
+  border-radius: 6px;
+  padding: 0 14px;
+  font: inherit;
+}
+
+.consent-row {
+  grid-template-columns: auto 1fr;
+  align-items: start;
+  font-weight: 500;
+}
+
+.consent-row input {
+  margin-top: 4px;
+}
+
+.field-error {
+  color: #b01425;
+  font-weight: 750;
+  line-height: 1.4;
+}
+
+.modal-submit {
+  width: 100%;
+  margin-top: 6px;
 }
 
 @media (max-width: 980px) {
@@ -446,11 +694,39 @@ summary {
   .line-list {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .offer-section > div:first-child {
+    grid-row: auto;
+  }
 }
 
 @media (max-width: 620px) {
+  body {
+    font-size: 16px;
+  }
+
+  .hero,
+  .section,
+  .final-cta {
+    padding: 48px 18px;
+  }
+
+  .hero {
+    gap: 30px;
+  }
+
   .hero h1 {
-    font-size: 4rem;
+    font-size: clamp(3.4rem, 17vw, 4.6rem);
+  }
+
+  .hero-edition {
+    font-size: 1.32rem;
+  }
+
+  .section h2,
+  .final-cta h2 {
+    font-size: clamp(2rem, 10vw, 3.2rem);
+    line-height: 1.08;
   }
 
   .feature-grid,
@@ -465,7 +741,32 @@ summary {
     width: 100%;
   }
 
+  .hero-visual {
+    min-height: 230px;
+  }
+
+  .visual-panel {
+    right: 0;
+    left: 0;
+    width: 100%;
+  }
+
   .target-small {
     display: none;
+  }
+
+  .feature-card,
+  .audience-item,
+  .program-block,
+  .speaker-card,
+  .workshop-callout,
+  .price-box,
+  .group-box,
+  .faq-item {
+    padding: 20px;
+  }
+
+  .checkout-modal {
+    padding: 26px 18px 20px;
   }
 }

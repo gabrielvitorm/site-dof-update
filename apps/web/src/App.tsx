@@ -1,14 +1,136 @@
+import { useEffect, useReducer, useRef, type FormEvent, type ReactNode } from 'react';
+import type { CtaOrigin, LeadCaptureResponse } from '@dof-update/contracts';
 import { eventContent } from './content/event';
+import { createAnalytics } from './features/analytics/analytics';
+import { getAttributionSnapshot } from './features/attribution/attribution';
+import { CheckoutCaptureModal } from './features/checkout/CheckoutCaptureModal';
+import {
+  checkoutReducer,
+  createInitialCheckoutState,
+  hasCheckoutErrors,
+  validateCheckoutForm
+} from './features/checkout/checkout-state';
 import './styles.css';
 
 export function App() {
+  const [checkoutState, dispatchCheckout] = useReducer(
+    checkoutReducer,
+    undefined,
+    createInitialCheckoutState
+  );
+  const lastTriggerRef = useRef<HTMLButtonElement | null>(null);
+  const analytics = useRef(createAnalytics()).current;
+
+  const openCheckoutCapture = (ctaOrigin: CtaOrigin, trigger: HTMLButtonElement) => {
+    lastTriggerRef.current = trigger;
+    analytics.trackCtaClick(ctaOrigin);
+    dispatchCheckout({ type: 'open', ctaOrigin });
+  };
+
+  const closeCheckoutCapture = () => {
+    dispatchCheckout({ type: 'close' });
+    window.setTimeout(() => lastTriggerRef.current?.focus(), 0);
+  };
+
+  useEffect(() => {
+    if (!checkoutState.isOpen) {
+      return undefined;
+    }
+
+    const modalElement = document.querySelector<HTMLElement>('.checkout-modal');
+    const focusableElements = modalElement?.querySelectorAll<HTMLElement>(
+      'button, input, [href], select, textarea, [tabindex]:not([tabindex="-1"])'
+    );
+    focusableElements?.[0]?.focus();
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        closeCheckoutCapture();
+        return;
+      }
+
+      if (event.key !== 'Tab' || !focusableElements?.length) {
+        return;
+      }
+
+      const firstElement = focusableElements[0];
+      const lastElement = focusableElements[focusableElements.length - 1];
+
+      if (event.shiftKey && document.activeElement === firstElement) {
+        event.preventDefault();
+        lastElement?.focus();
+      } else if (!event.shiftKey && document.activeElement === lastElement) {
+        event.preventDefault();
+        firstElement?.focus();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [checkoutState.isOpen]);
+
+  const submitCheckoutCapture = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const errors = validateCheckoutForm(checkoutState.form);
+    if (hasCheckoutErrors(errors)) {
+      dispatchCheckout({ type: 'validation_failed', errors });
+      return;
+    }
+
+    if (!checkoutState.ctaOrigin) {
+      return;
+    }
+
+    dispatchCheckout({ type: 'submit_started' });
+
+    try {
+      const attribution = getAttributionSnapshot(checkoutState.ctaOrigin);
+      const response = await fetch('/api/leads', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          name: checkoutState.form.name,
+          phone: checkoutState.form.phone,
+          email: checkoutState.form.email,
+          consent: checkoutState.form.consent,
+          attribution
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('lead_capture_failed');
+      }
+
+      const result = (await response.json()) as LeadCaptureResponse;
+      analytics.trackLead({ leadId: result.leadId, attribution });
+      analytics.trackBeginCheckout({ leadId: result.leadId, price: 320, currency: 'BRL' });
+
+      if (result.redirectAllowed) {
+        window.location.assign(result.checkoutUrl);
+      }
+    } catch {
+      analytics.trackCheckoutRedirectFailed({
+        ctaOrigin: checkoutState.ctaOrigin,
+        errorCategory: 'lead_capture_failed'
+      });
+      dispatchCheckout({
+        type: 'submit_failed',
+        message:
+          'Não conseguimos registrar seus dados agora. Tente novamente ou continue para a inscrição.'
+      });
+    }
+  };
+
   return (
     <main className="landing">
-      <HeroSection />
+      <HeroSection onOpenCheckoutCapture={openCheckoutCapture} />
       <section className="section section-light" id="why-participate">
         <SectionIntro
           eyebrow="Por que participar"
-          title="Atualizacao cientifica que se conecta a pratica clinica"
+          title="Atualização científica que se conecta à prática clínica"
           copy={eventContent.whyParticipate}
         />
         <div className="feature-grid">
@@ -24,9 +146,9 @@ export function App() {
 
       <section className="section section-muted" id="audience">
         <SectionIntro
-          eyebrow="Publico"
-          title="Para quem e o DOF Update 2026?"
-          copy="Uma imersao criada para profissionais e estudantes da saude que querem aprofundar DTM, dor orofacial, sono e cuidado interprofissional."
+          eyebrow="Público"
+          title="Para quem é o DOF Update 2026?"
+          copy="Uma imersão criada para profissionais e estudantes da saúde que querem aprofundar DTM, dor orofacial, sono e cuidado interprofissional."
         />
         <div className="audience-grid">
           {eventContent.audience.map((item) => (
@@ -36,20 +158,40 @@ export function App() {
             </article>
           ))}
         </div>
+        <div className="section-action">
+          <CheckoutButton ctaOrigin="audience" onOpen={openCheckoutCapture}>
+            GARANTIR MINHA VAGA
+          </CheckoutButton>
+        </div>
       </section>
 
       <ProgramSection />
       <SpeakersSection />
       <ExperienceSection />
-      <OfferSection />
+      <OfferSection onOpenCheckoutCapture={openCheckoutCapture} />
       <LocationSection />
       <FaqSection />
-      <FinalCtaSection />
+      <FinalCtaSection onOpenCheckoutCapture={openCheckoutCapture} />
+      <CheckoutCaptureModal
+        ctaOrigin={checkoutState.ctaOrigin}
+        errorMessage={checkoutState.errorMessage}
+        errors={checkoutState.errors}
+        form={checkoutState.form}
+        isOpen={checkoutState.isOpen}
+        isSubmitting={checkoutState.status === 'submitting'}
+        onChange={(field, value) => dispatchCheckout({ type: 'change', field, value })}
+        onClose={closeCheckoutCapture}
+        onSubmit={submitCheckoutCapture}
+      />
     </main>
   );
 }
 
-function HeroSection() {
+function HeroSection({
+  onOpenCheckoutCapture
+}: {
+  onOpenCheckoutCapture: (ctaOrigin: CtaOrigin, trigger: HTMLButtonElement) => void;
+}) {
   return (
     <section className="hero" id="hero">
       <div className="hero-content">
@@ -58,18 +200,22 @@ function HeroSection() {
         <p className="hero-edition">{eventContent.edition}</p>
         <p className="hero-promise">{eventContent.promise}</p>
         <p className="hero-copy">{eventContent.intro}</p>
-        <div className="hero-facts" aria-label="Informacoes principais do evento">
-          <span>{eventContent.date}</span>
-          <span>{eventContent.venue}</span>
-          <span>{eventContent.city}</span>
-          <span>{eventContent.price}</span>
-        </div>
+      <div className="hero-facts" aria-label="Informacoes principais do evento">
+        <span>{eventContent.date}</span>
+        <span>{eventContent.venue}</span>
+        <span>{eventContent.city}</span>
+        <span>Profissionais {eventContent.price}</span>
+      </div>
         <div className="hero-actions">
-          <a className="button button-primary" href="#offer">
+          <CheckoutButton ctaOrigin="hero" onOpen={onOpenCheckoutCapture}>
             {eventContent.primaryCta}
-          </a>
-          <span>{eventContent.format}. {eventContent.noRecording}</span>
+          </CheckoutButton>
+          <span>{eventContent.ctaMicrocopy}</span>
+          <small>{eventContent.scarcityNote}</small>
         </div>
+        <p className="hero-note">
+          {eventContent.format}. {eventContent.noRecording}
+        </p>
       </div>
       <div className="hero-visual" aria-hidden="true">
         <div className="target target-large" />
@@ -89,9 +235,9 @@ function ProgramSection() {
   return (
     <section className="section section-dark" id="program">
       <SectionIntro
-        eyebrow="Programacao"
-        title="Programacao DOF Update 2026"
-        copy="Dois dias de conteudo, pratica e integracao entre profissionais de diferentes areas da saude."
+        eyebrow="Programação"
+        title="Programação DOF Update 2026"
+        copy="Dois dias de conteúdo, prática e integração entre profissionais de diferentes áreas da saúde."
       />
       <div className="program-grid">
         {eventContent.program.map((program) => (
@@ -117,8 +263,8 @@ function SpeakersSection() {
     <section className="section section-light" id="speakers">
       <SectionIntro
         eyebrow="Palestrantes"
-        title="Quem estara no DOF Update 2026"
-        copy="Os nomes e credenciais definitivos devem ser inseridos apenas quando forem fornecidos pela organizacao."
+        title="Quem estará no DOF Update 2026"
+        copy="Os nomes e credenciais definitivos devem ser inseridos apenas quando forem fornecidos pela organização."
       />
       <div className="speaker-grid">
         {eventContent.speakers.map((speaker) => (
@@ -138,9 +284,9 @@ function ExperienceSection() {
   return (
     <section className="section section-muted" id="experience">
       <SectionIntro
-        eyebrow="Experiencia"
-        title="Mais do que assistir palestras. Uma experiencia para ampliar sua pratica clinica."
-        copy="O DOF Update foi pensado para profissionais que nao querem apenas acumular informacao, mas compreender melhor os casos que chegam ao consultorio."
+        eyebrow="Experiência"
+        title="Mais do que assistir palestras. Uma experiência para ampliar sua prática clínica."
+        copy="O DOF Update foi pensado para profissionais que não querem apenas acumular informação, mas compreender melhor os casos que chegam ao consultório."
       />
       <div className="line-list">
         {eventContent.differentiators.map((item) => (
@@ -156,31 +302,57 @@ function ExperienceSection() {
   );
 }
 
-function OfferSection() {
+function OfferSection({
+  onOpenCheckoutCapture
+}: {
+  onOpenCheckoutCapture: (ctaOrigin: CtaOrigin, trigger: HTMLButtonElement) => void;
+}) {
   return (
     <section className="section offer-section" id="offer">
       <div>
         <p className="eyebrow">{eventContent.lot}</p>
         <h2>Garanta sua vaga no DOF Update 2026</h2>
         <p>
-          {eventContent.edition}. Um dia inteiro de atualizacao cientifica, integracao entre especialidades e
-          discussoes voltadas para a pratica clinica.
+          {eventContent.edition}. Um dia inteiro de atualização científica, integração entre especialidades e
+          discussões voltadas para a prática clínica.
         </p>
-        <a className="button button-primary" href="#hero">
-          Garantir minha vaga no ultimo lote
+        <CheckoutButton ctaOrigin="offer" onOpen={onOpenCheckoutCapture}>
+          {eventContent.primaryCta}
+        </CheckoutButton>
+        <p className="cta-support">{eventContent.ctaMicrocopy}</p>
+        <a className="even3-inline-link" href={eventContent.even3RegistrationUrl} rel="noreferrer" target="_blank">
+          Abrir página oficial na Even3
         </a>
+        <p className="scarcity-note">{eventContent.scarcityNote}</p>
       </div>
       <div className="price-box">
-        <span>{eventContent.date}</span>
-        <strong>{eventContent.price}</strong>
-        <p>{eventContent.format}</p>
+        <span>{eventContent.lot}</span>
+        <h3>Ingressos por categoria</h3>
+        <p>Valores oficiais da Even3 válidos {eventContent.ticketValidity}, sujeitos à disponibilidade.</p>
+        <div className="ticket-grid">
+          {eventContent.ticketCategories.map((ticket) => (
+            <article className="ticket-card" key={ticket.name}>
+              <div>
+                <h4>{ticket.name}</h4>
+                {ticket.badge ? <span className="ticket-badge">{ticket.badge}</span> : null}
+              </div>
+              <strong>{ticket.price}</strong>
+              <small>{ticket.validUntil}</small>
+              <a href={eventContent.even3RegistrationUrl} rel="noreferrer" target="_blank">
+                Ver na Even3
+              </a>
+            </article>
+          ))}
+        </div>
       </div>
       <div className="group-box">
         <h3>{eventContent.groupOffer.title}</h3>
         {eventContent.groupOffer.items.map((item) => (
           <p key={item}>{item}</p>
         ))}
-        <a href="#location">{eventContent.groupOffer.cta}</a>
+        <a href={eventContent.groupOffer.url} rel="noreferrer" target="_blank">
+          {eventContent.groupOffer.cta}
+        </a>
       </div>
     </section>
   );
@@ -190,17 +362,28 @@ function LocationSection() {
   return (
     <section className="section section-light" id="location">
       <SectionIntro
-        eyebrow="Localizacao"
+        eyebrow="Localização"
         title={eventContent.location.title}
         copy={`${eventContent.venue} - ${eventContent.city}. ${eventContent.location.guidance}`}
       />
       <div className="location-panel">
-        <div className="map-placeholder" aria-label="Mapa sera carregado de forma lazy">
-          <span>FAESA</span>
-          <small>{eventContent.location.address}</small>
+        <div className="map-frame">
+          <iframe
+            allowFullScreen
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+            src={eventContent.location.mapEmbedUrl}
+            title="Mapa do Auditório da FAESA"
+          />
+          <address>{eventContent.location.address}</address>
         </div>
-        <a className="button button-secondary" href="#hero">
-          Abrir localizacao no Google Maps
+        <a
+          className="button button-secondary"
+          href={eventContent.location.mapsDirectionsUrl}
+          rel="noreferrer"
+          target="_blank"
+        >
+          Traçar rota
         </a>
       </div>
     </section>
@@ -210,32 +393,81 @@ function LocationSection() {
 function FaqSection() {
   return (
     <section className="section section-muted" id="faq">
-      <SectionIntro eyebrow="FAQ" title="Perguntas frequentes" copy="Respostas para as principais duvidas antes da inscricao." />
+      <SectionIntro eyebrow="FAQ" title="Perguntas frequentes" copy="Respostas para as principais dúvidas antes da inscrição." />
       <div className="faq-list">
         {eventContent.faqs.map((faq) => (
-          <details key={faq.question} open>
-            <summary>{faq.question}</summary>
-            <p>{faq.answer}</p>
-          </details>
+          <FaqItem answer={faq.answer} key={faq.question} question={faq.question} />
         ))}
       </div>
     </section>
   );
 }
 
-function FinalCtaSection() {
+function FinalCtaSection({
+  onOpenCheckoutCapture
+}: {
+  onOpenCheckoutCapture: (ctaOrigin: CtaOrigin, trigger: HTMLButtonElement) => void;
+}) {
   return (
     <section className="final-cta" id="final">
-      <p className="eyebrow">Proxima atualizacao clinica</p>
-      <h2>Sua proxima atualizacao clinica pode comecar aqui.</h2>
+      <p className="eyebrow">Próxima atualização clínica</p>
+      <h2>Sua próxima atualização clínica pode começar aqui.</h2>
       <p>
-        {eventContent.name} - Ciencia, pratica clinica e diferentes especialidades reunidas em torno do mesmo
+        {eventContent.name} - Ciência, prática clínica e diferentes especialidades reunidas em torno do mesmo
         paciente.
       </p>
-      <a className="button button-primary" href="#offer">
-        Garantir minha vaga no DOF Update 2026
-      </a>
+      <div className="quick-facts">
+        <span>{eventContent.name}</span>
+        <span>03 de outubro</span>
+        <span>Vitória/ES</span>
+        <span>{eventContent.lot} - categorias até 01/10</span>
+      </div>
+      <CheckoutButton ctaOrigin="final" onOpen={onOpenCheckoutCapture}>
+        {eventContent.primaryCta}
+      </CheckoutButton>
     </section>
+  );
+}
+
+function CheckoutButton({
+  children,
+  ctaOrigin,
+  onOpen
+}: {
+  children: ReactNode;
+  ctaOrigin: CtaOrigin;
+  onOpen: (ctaOrigin: CtaOrigin, trigger: HTMLButtonElement) => void;
+}) {
+  return (
+    <button
+      className="button button-primary"
+      data-cta-origin={ctaOrigin}
+      onClick={(event) => onOpen(ctaOrigin, event.currentTarget)}
+      type="button"
+    >
+      {children}
+    </button>
+  );
+}
+
+function FaqItem({ answer, question }: { answer: string; question: string }) {
+  const [isOpen, toggleOpen] = useReducer((value: boolean) => !value, false);
+
+  return (
+    <article className="faq-item">
+      <button
+        aria-expanded={isOpen}
+        className="faq-trigger"
+        onClick={toggleOpen}
+        type="button"
+      >
+        {question}
+        <span aria-hidden="true">{isOpen ? '−' : '+'}</span>
+      </button>
+      <div className="faq-answer" hidden={!isOpen}>
+        <p>{answer}</p>
+      </div>
+    </article>
   );
 }
 
