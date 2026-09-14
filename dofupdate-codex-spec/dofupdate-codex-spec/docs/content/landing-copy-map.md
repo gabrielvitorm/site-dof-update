@@ -30,22 +30,12 @@ Cards for:
 - Cuidado Interprofissional
 
 ## 5. Program
-Two tabs/blocks:
-- 02/10 workshop
-- 03/10 main event
-Use structured placeholders until details are provided.
+Main event (03/10) presented as Manhã / Tarde periods with confirmed talks.
+Do not invent individual talk times. Milestones: credenciamento 07h30, abertura 08h00, encerramento 18h45.
 
 ## 6. Speakers
-Data-driven cards with placeholder object fields:
-```ts
-{
-  name: "[PALESTRANTE 01]",
-  specialty: "[ESPECIALIDADE / TITULAÇÃO]",
-  bio: "[MINI BIO]",
-  topic: "[TEMA]",
-  image: null
-}
-```
+Data-driven cards for the 10 confirmed main-event speakers (name, profession, bio, topic, optional image).
+Source of truth: `apps/web/src/content/event.ts` and `.context/CONTENT.md`.
 
 ## 7. Differentiators
 - science connected to clinic;
@@ -54,8 +44,10 @@ Data-driven cards with placeholder object fields:
 - in-person experience;
 - no recording/online transmission.
 
-## 8. Workshop
+## 8. Workshop / Pre-event
+02/10 Workshop de Tecnologias para Dor with four confirmed workshop cards and pre-event guests.
 Clearly mark separate registration and limited availability. Do not imply main-ticket inclusion.
+Official guest name: Sheila Paiva.
 
 ## 9. Offer
 - Último lote

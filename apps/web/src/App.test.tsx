@@ -36,33 +36,80 @@ describe('DOF Update landing page', () => {
     expect(html).toContain('Valores por categoria disponíveis até 01/10/2026 ou enquanto houver vagas.');
     expect(html).toContain('data-cta-origin="hero"');
     expect(html).toContain('data-cta-origin="audience"');
-    expect(html).toContain('data-cta-origin="offer"');
+    expect(html).toContain('data-cta-origin="pricing_carousel"');
     expect(html).toContain('data-cta-origin="final"');
   });
 
   it('renders all official ticket categories, group link and refund policy', () => {
     const html = renderToStaticMarkup(<App />);
 
-    expect(html).toContain('Profissionais');
-    expect(html).toContain('R$320,00');
+    expect(html).toContain('R$ 320,00');
     expect(html).toContain('Aluno de graduação');
-    expect(html).toContain('R$230,00');
-    expect(html).toContain('Profissionais sócios adimplentes ABRAFITO');
-    expect(html).toContain('R$272,00');
-    expect(html).toContain('Profissionais evento + pré-evento');
-    expect(html).toContain('R$380,00');
-    expect(html).toContain('Últimas vagas');
-    expect(html).toContain('Alunos de graduação evento + pré-evento');
-    expect(html).toContain('R$290,00');
-    expect(html).toContain('Profissionais sócios adimplentes ABRAFITO evento + pré-evento');
-    expect(html).toContain('R$332,00');
+    expect(html).toContain('R$ 230,00');
+    expect(html).toContain('aria-label="Ir para Profissionais sócios adimplentes ABRAFITO"');
+    expect(html).toContain('aria-label="Ir para Profissionais evento + pré-evento"');
+    expect(html).toContain('Evento + Pré-evento');
+    expect(html).toContain('aria-label="Ir para Alunos de graduação evento + pré-evento"');
+    expect(html).toContain(
+      'aria-label="Ir para Profissionais sócios adimplentes ABRAFITO evento + pré-evento"'
+    );
+    expect(html).toContain('R$ 332,00');
     expect(html).toContain('até 01/10/2026');
+    expect(html).toContain('Escolha a categoria da sua inscrição. Estamos no último lote.');
+    expect(html).toContain('data-cta-origin="pricing_carousel"');
+    expect(html).toContain('ticket-carousel-card-left');
+    expect(html).toContain('ticket-carousel-card-center');
+    expect(html).toContain('ticket-carousel-card-right');
+    expect(html).toContain('GARANTIR MINHA VAGA');
+    expect(html).not.toContain('Ver na Even3');
     expect(html).toContain('https://forms.gle/aSKo8XbHoPgSzHXn9');
     expect(html).toContain('https://www.even3.com.br/dof-update-iii-imersao-interprofissional-em-dtm-e-dores-orofaciais-698642/');
-    expect(html).toContain('Ver na Even3');
     expect(html).toContain('Abrir página oficial na Even3');
     expect(html).toContain('Até 30 dias antes da realização do evento');
     expect(html).toContain('90% do valor da inscrição');
+  });
+
+  it('renders confirmed speakers, main program periods and pre-event workshops', () => {
+    const html = renderToStaticMarkup(<App />);
+
+    expect(html).toContain('Manhã');
+    expect(html).toContain('Tarde');
+    expect(html).toContain('Credenciamento: 07h30');
+    expect(html).toContain('Abertura: 08h00');
+    expect(html).toContain('Encerramento: 18h45');
+    expect(html).toContain('Raí Santiago');
+    expect(html).toContain('Gabriela Vendolin');
+    expect(html).toContain('Thays Crosara');
+    expect(html).toContain('Juliana Stuginski');
+    expect(html).toContain('Márcia Targino');
+    expect(html).toContain('Roberto Garanhani');
+    expect(html).toContain('Guacyra Muzzi');
+    expect(html).toContain('Thiago Motta');
+    expect(html).toContain('Bruna Cabugueira');
+    expect(html).toContain('Nídia Marinho');
+    expect(html).toContain('Amplie sua experiência no DOF Update 2026');
+    expect(html).toContain('Workshop de Tecnologias para Dor');
+    expect(html).toContain('Eletromiografia na percepção e conduta terapêutica do bruxismo e da dor orofacial');
+    expect(html).toContain('Manejo Interprofissional do Zumbido Somatossensorial');
+    expect(html).toContain('Gerenciamento Estratégico do Consultório de Dor Orofacial');
+    expect(html).toContain('Eletroestimulação na DTM');
+    expect(html).toContain('Sheila Paiva');
+    expect(html).toContain('Erika Galiza');
+    expect(html).toContain('Benedita Barbosa');
+    expect(html).toContain('src="/speakers/rai-santiago.webp"');
+    expect(html).toContain('src="/speakers/gabriela-vendolin.png"');
+    expect(html).toContain('src="/speakers/thays-crosara.webp"');
+    expect(html).toContain('src="/speakers/juliana-stuginski.webp"');
+    expect(html).toContain('src="/speakers/marcia-targino.webp"');
+    expect(html).toContain('src="/speakers/roberto-garanhani.webp"');
+    expect(html).toContain('src="/speakers/guacyra-muzzi.webp"');
+    expect(html).toContain('src="/speakers/thiago-motta.webp"');
+    expect(html).toContain('src="/speakers/bruna-cabugueira.webp"');
+    expect(html).toContain('src="/speakers/nidia-marinho.png"');
+    expect(html).not.toContain('[PALESTRANTE');
+    expect(html).not.toContain('[HORÁRIO]');
+    expect(html).not.toContain('Scheila');
+    expect(html).not.toContain('Sheila Farias');
   });
 
   it('renders the mini-capture modal with accessible labels and approved copy when open', () => {
@@ -75,6 +122,7 @@ describe('DOF Update landing page', () => {
         isSubmitting={false}
         onChange={() => undefined}
         onClose={() => undefined}
+        onContinueToCheckout={() => undefined}
         onSubmit={() => undefined}
       />
     );
@@ -91,5 +139,33 @@ describe('DOF Update landing page', () => {
     expect(html).toContain('placeholder="seuemail@email.com"');
     expect(html).toContain('CONTINUAR PARA INSCRIÇÃO');
     expect(html).toContain('Seus dados serão utilizados para informações relacionadas à sua inscrição');
+    expect(html).not.toContain('Continuar mesmo assim');
+  });
+
+  it('shows a checkout fallback action when lead capture fails', () => {
+    const html = renderToStaticMarkup(
+      <CheckoutCaptureModal
+        ctaOrigin="hero"
+        errorMessage="Não conseguimos registrar seus dados agora. Você pode tentar de novo ou continuar para a inscrição."
+        errors={{}}
+        form={{
+          name: 'Ana Silva',
+          phone: '+55 (27) 99999-9999',
+          email: 'ana@example.com',
+          consent: true
+        }}
+        isOpen
+        isSubmitting={false}
+        onChange={() => undefined}
+        onClose={() => undefined}
+        onContinueToCheckout={() => undefined}
+        onSubmit={() => undefined}
+      />
+    );
+
+    expect(html).toContain('Continuar mesmo assim');
+    expect(html).toContain(
+      'Não conseguimos registrar seus dados agora. Você pode tentar de novo ou continuar para a inscrição.'
+    );
   });
 });

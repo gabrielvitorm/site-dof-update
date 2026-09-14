@@ -1,29 +1,28 @@
 # Pendências / dados necessários
 
 ## Alta prioridade antes de produção
-- URL oficial do checkout/entrada do último lote na Even3.
 - Configuração/acesso aos webhooks Even3.
 - Endereço completo oficial do Auditório da FAESA usado no evento.
 - URL exata Google Maps.
 - WhatsApp oficial de suporte.
 - URL oficial do formulário de grupos.
-- Meta Pixel ID.
-- GA4 Measurement ID.
 - domínio/subdomínio final.
 - dados DNS/VPS.
 
+## Tracking configurado
+- Meta Pixel ID: `1260445516208115` (`VITE_META_PIXEL_ID`).
+- GA4 Measurement ID: `G-T21VTEB82Y` (`VITE_GA4_MEASUREMENT_ID`).
+- Pendente: Meta CAPI access token para `purchase` server-side.
+
 ## Conteúdo
-- lista definitiva de palestrantes;
-- fotos;
-- credenciais/titulações;
-- mini bios;
-- temas;
-- grade detalhada com horários;
+- confirmar mapeamento `roberto-ramos.webp` → Roberto Garanhani;
+- identificar `paulo-cesar.webp`;
+- horários individuais da grade (quando a organização publicar);
 - logos oficiais;
 - fotos de edições anteriores;
 - fotos do local;
 - regras finais/certificação, se houver;
-- detalhes finais do workshop e valor, se aplicável.
+- valor final do workshop, se aplicável separadamente.
 
 ## Marketing/automação
 - provedor WhatsApp escolhido;

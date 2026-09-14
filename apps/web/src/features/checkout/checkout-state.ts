@@ -1,4 +1,5 @@
 import type { CtaOrigin } from '@dof-update/contracts';
+import type { TicketCategory } from '../../content/event';
 
 export interface CheckoutFormState {
   name: string;
@@ -11,9 +12,19 @@ export type CheckoutFormErrors = Partial<Record<keyof CheckoutFormState, string>
 
 export type CheckoutStatus = 'idle' | 'submitting' | 'error';
 
+export interface SelectedCheckoutTicket {
+  id: string;
+  name: string;
+  price: string;
+  priceValue: number;
+  variant: TicketCategory['variant'];
+  checkoutUrl: string;
+}
+
 export interface CheckoutState {
   isOpen: boolean;
   ctaOrigin: CtaOrigin | null;
+  selectedTicket: SelectedCheckoutTicket | null;
   form: CheckoutFormState;
   errors: CheckoutFormErrors;
   status: CheckoutStatus;
@@ -21,7 +32,7 @@ export interface CheckoutState {
 }
 
 export type CheckoutAction =
-  | { type: 'open'; ctaOrigin: CtaOrigin }
+  | { type: 'open'; ctaOrigin: CtaOrigin; ticket: SelectedCheckoutTicket }
   | { type: 'close' }
   | { type: 'change'; field: keyof CheckoutFormState; value: string | boolean }
   | { type: 'validation_failed'; errors: CheckoutFormErrors }
@@ -36,16 +47,21 @@ const initialForm: CheckoutFormState = {
 };
 
 export function formatBrazilianWhatsApp(value: string): string {
-  const digits = value.replace(/\D/g, '');
+  const digitsOnly = value.replace(/\D/g, '');
 
-  if (!digits) {
+  if (!digitsOnly) {
     return '';
   }
 
-  const nationalDigits = (digits.startsWith('55') && digits.length > 11 ? digits.slice(2) : digits).slice(
-    0,
-    11
-  );
+  const prefixedByMask = value.trimStart().startsWith('+55');
+  let nationalDigits = digitsOnly;
+
+  if (digitsOnly.startsWith('55') && (prefixedByMask || digitsOnly.length > 11)) {
+    nationalDigits = digitsOnly.slice(2);
+  }
+
+  nationalDigits = nationalDigits.slice(0, 11);
+
   const areaCode = nationalDigits.slice(0, 2);
   const firstPart = nationalDigits.length > 10 ? nationalDigits.slice(2, 7) : nationalDigits.slice(2, 6);
   const secondPart = nationalDigits.length > 10 ? nationalDigits.slice(7, 11) : nationalDigits.slice(6, 10);
@@ -75,11 +91,37 @@ export function createInitialCheckoutState(): CheckoutState {
   return {
     isOpen: false,
     ctaOrigin: null,
+    selectedTicket: null,
     form: initialForm,
     errors: {},
     status: 'idle',
     errorMessage: null
   };
+}
+
+export function toSelectedCheckoutTicket(ticket: TicketCategory): SelectedCheckoutTicket {
+  return {
+    id: ticket.id,
+    name: ticket.name,
+    price: ticket.price,
+    priceValue: ticket.priceValue,
+    variant: ticket.variant,
+    checkoutUrl: ticket.checkoutUrl
+  };
+}
+
+export function resolveCheckoutRedirectUrl(
+  selectedTicket: SelectedCheckoutTicket | null,
+  apiCheckoutUrl: string
+): string {
+  return selectedTicket?.checkoutUrl ?? apiCheckoutUrl;
+}
+
+export function canContinueToCheckout(
+  selectedTicket: SelectedCheckoutTicket | null,
+  apiCheckoutUrl = ''
+): boolean {
+  return Boolean(resolveCheckoutRedirectUrl(selectedTicket, apiCheckoutUrl));
 }
 
 export function checkoutReducer(state: CheckoutState, action: CheckoutAction): CheckoutState {
@@ -89,6 +131,7 @@ export function checkoutReducer(state: CheckoutState, action: CheckoutAction): C
         ...state,
         isOpen: true,
         ctaOrigin: action.ctaOrigin,
+        selectedTicket: action.ticket,
         errors: {},
         status: 'idle',
         errorMessage: null
@@ -98,6 +141,7 @@ export function checkoutReducer(state: CheckoutState, action: CheckoutAction): C
         ...state,
         isOpen: false,
         ctaOrigin: null,
+        selectedTicket: null,
         status: 'idle',
         errorMessage: null
       };

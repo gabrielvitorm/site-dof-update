@@ -98,7 +98,10 @@ describe('analytics facade', () => {
       meta: adapters.meta
     });
 
+    analytics.trackViewContent(createAttribution());
     analytics.trackCtaClick('offer');
+    analytics.trackLeadFormOpen('offer');
+    analytics.trackLeadFormSubmit('offer');
     analytics.trackLead({
       leadId: 'lead-123',
       attribution: createAttribution()
@@ -112,27 +115,64 @@ describe('analytics facade', () => {
       ctaOrigin: 'offer',
       errorCategory: 'api_unavailable'
     });
+    analytics.trackMapOpen('location');
+    analytics.trackGroupInterest('offer');
+    analytics.trackWhatsappSupportClick('footer');
 
     expect(adapters.ga4Events.map((event) => event.name)).toEqual([
+      'view_content',
       'cta_click',
+      'lead_form_open',
+      'lead_form_submit',
       'generate_lead',
       'begin_checkout',
-      'checkout_redirect_failed'
+      'checkout_redirect_failed',
+      'map_open',
+      'group_interest',
+      'whatsapp_support_click'
     ]);
-    expect(adapters.ga4Events[0]?.params).toEqual({ cta_origin: 'offer' });
-    expect(adapters.ga4Events[1]?.params).toMatchObject({
+    expect(adapters.ga4Events[0]?.params).toMatchObject({
+      content_name: 'DOF Update 2026',
+      page_location: 'https://dofupdate.com.br/?utm_source=meta'
+    });
+    expect(adapters.ga4Events[1]?.params).toEqual({ cta_origin: 'offer' });
+    expect(adapters.ga4Events[2]?.params).toEqual({ cta_origin: 'offer' });
+    expect(adapters.ga4Events[3]?.params).toEqual({ cta_origin: 'offer' });
+    expect(adapters.ga4Events[4]?.params).toMatchObject({
       lead_id: 'lead-123',
       utm_source: 'meta',
       cta_origin: 'hero'
     });
-    expect(adapters.ga4Events[2]?.params).toEqual({
+    expect(adapters.ga4Events[5]?.params).toEqual({
       lead_id: 'lead-123',
       value: 320,
       currency: 'BRL'
     });
+    expect(adapters.ga4Events[7]?.params).toEqual({ section: 'location' });
+    expect(adapters.ga4Events[8]?.params).toEqual({ section: 'offer' });
+    expect(adapters.ga4Events[9]?.params).toEqual({ section: 'footer' });
     expect(adapters.metaEvents).toEqual([
       {
+        name: 'ViewContent',
+        params: {
+          content_name: 'DOF Update 2026',
+          content_category: 'event',
+          event_source_url: 'https://dofupdate.com.br/?utm_source=meta'
+        },
+        custom: false
+      },
+      {
         name: 'cta_click',
+        params: { cta_origin: 'offer' },
+        custom: true
+      },
+      {
+        name: 'lead_form_open',
+        params: { cta_origin: 'offer' },
+        custom: true
+      },
+      {
+        name: 'lead_form_submit',
         params: { cta_origin: 'offer' },
         custom: true
       },
@@ -161,6 +201,62 @@ describe('analytics facade', () => {
         params: {
           cta_origin: 'offer',
           error_category: 'api_unavailable'
+        },
+        custom: true
+      },
+      {
+        name: 'map_open',
+        params: { section: 'location' },
+        custom: true
+      },
+      {
+        name: 'group_interest',
+        params: { section: 'offer' },
+        custom: true
+      },
+      {
+        name: 'whatsapp_support_click',
+        params: { section: 'footer' },
+        custom: true
+      }
+    ]);
+  });
+
+  it('tracks pricing carousel CTA with ticket metadata', () => {
+    const adapters = createRecordingAdapters();
+    const analytics = createAnalytics({
+      ga4MeasurementId: 'G-DOF2026',
+      metaPixelId: '123456',
+      ga4: adapters.ga4,
+      meta: adapters.meta
+    });
+
+    analytics.trackCtaClick({
+      ctaOrigin: 'pricing_carousel',
+      ticketType: 'Profissionais',
+      ticketPrice: 'R$ 320,00',
+      ticketVariant: 'main'
+    });
+
+    expect(adapters.ga4Events).toEqual([
+      {
+        name: 'cta_click',
+        params: {
+          cta_origin: 'pricing_carousel',
+          ticket_type: 'Profissionais',
+          ticket_price: 'R$ 320,00',
+          ticket_variant: 'main'
+        }
+      }
+    ]);
+    expect(adapters.metaEvents).toEqual([
+      {
+        name: 'cta_click',
+        params: {
+          cta_origin: 'pricing_carousel',
+          ticket_type: 'Profissionais',
+          ticket_price: 'R$ 320,00',
+          ticket_variant: 'main'
         },
         custom: true
       }

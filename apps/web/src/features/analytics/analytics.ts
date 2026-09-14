@@ -32,12 +32,25 @@ export interface CheckoutRedirectFailureInput {
   errorCategory: string;
 }
 
+export interface CtaClickInput {
+  ctaOrigin: CtaOrigin;
+  ticketType?: string;
+  ticketPrice?: string;
+  ticketVariant?: string;
+}
+
 export interface Analytics {
   trackPageView(attribution: Attribution): void;
-  trackCtaClick(ctaOrigin: CtaOrigin): void;
+  trackViewContent(attribution: Attribution): void;
+  trackCtaClick(input: CtaOrigin | CtaClickInput): void;
+  trackLeadFormOpen(ctaOrigin: CtaOrigin): void;
+  trackLeadFormSubmit(ctaOrigin: CtaOrigin): void;
   trackLead(input: LeadTrackingInput): void;
   trackBeginCheckout(input: CheckoutTrackingInput): void;
   trackCheckoutRedirectFailed(input: CheckoutRedirectFailureInput): void;
+  trackMapOpen(section: string): void;
+  trackGroupInterest(section: string): void;
+  trackWhatsappSupportClick(section: string): void;
 }
 
 export function createAnalytics(config: AnalyticsConfig = {}): Analytics {
@@ -57,11 +70,44 @@ export function createAnalytics(config: AnalyticsConfig = {}): Analytics {
       });
     },
 
-    trackCtaClick(ctaOrigin) {
-      const params = { cta_origin: ctaOrigin };
+    trackViewContent(attribution) {
+      ga4?.event('view_content', {
+        content_name: 'DOF Update 2026',
+        page_location: attribution.landingUrl,
+        ...toAttributionParams(attribution)
+      });
+      meta?.track('ViewContent', {
+        content_name: 'DOF Update 2026',
+        content_category: 'event',
+        event_source_url: attribution.landingUrl
+      });
+    },
+
+    trackCtaClick(input) {
+      const payload = typeof input === 'string' ? { ctaOrigin: input } : input;
+      const params = {
+        cta_origin: payload.ctaOrigin,
+        ...(payload.ticketType ? { ticket_type: payload.ticketType } : {}),
+        ...(payload.ticketPrice ? { ticket_price: payload.ticketPrice } : {}),
+        ...(payload.ticketVariant ? { ticket_variant: payload.ticketVariant } : {})
+      };
 
       ga4?.event('cta_click', params);
       meta?.trackCustom('cta_click', params);
+    },
+
+    trackLeadFormOpen(ctaOrigin) {
+      const params = { cta_origin: ctaOrigin };
+
+      ga4?.event('lead_form_open', params);
+      meta?.trackCustom('lead_form_open', params);
+    },
+
+    trackLeadFormSubmit(ctaOrigin) {
+      const params = { cta_origin: ctaOrigin };
+
+      ga4?.event('lead_form_submit', params);
+      meta?.trackCustom('lead_form_submit', params);
     },
 
     trackLead(input) {
@@ -98,6 +144,27 @@ export function createAnalytics(config: AnalyticsConfig = {}): Analytics {
 
       ga4?.event('checkout_redirect_failed', params);
       meta?.trackCustom('checkout_redirect_failed', params);
+    },
+
+    trackMapOpen(section) {
+      const params = { section };
+
+      ga4?.event('map_open', params);
+      meta?.trackCustom('map_open', params);
+    },
+
+    trackGroupInterest(section) {
+      const params = { section };
+
+      ga4?.event('group_interest', params);
+      meta?.trackCustom('group_interest', params);
+    },
+
+    trackWhatsappSupportClick(section) {
+      const params = { section };
+
+      ga4?.event('whatsapp_support_click', params);
+      meta?.trackCustom('whatsapp_support_click', params);
     }
   };
 }

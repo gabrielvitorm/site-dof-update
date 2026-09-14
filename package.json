@@ -9,6 +9,10 @@
   ],
   "scripts": {
     "dev": "npm run dev --workspace @dof-update/web",
+    "dev:api": "npm run dev --workspace @dof-update/api",
+    "db:up": "docker compose -f infra/docker-compose.yml up -d",
+    "db:down": "docker compose -f infra/docker-compose.yml down",
+    "db:migrate": "npm run migrate --workspace @dof-update/api",
     "build": "npm run build --workspaces --if-present",
     "test": "vitest run apps packages",
     "typecheck": "npm run typecheck --workspaces --if-present",

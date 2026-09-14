@@ -1,15 +1,20 @@
 import { useEffect, useReducer, useRef, type FormEvent, type ReactNode } from 'react';
 import type { CtaOrigin, LeadCaptureResponse } from '@dof-update/contracts';
-import { eventContent } from './content/event';
-import { createAnalytics } from './features/analytics/analytics';
+import { eventContent, type TicketCategory } from './content/event';
+import { createAnalytics, type Analytics } from './features/analytics/analytics';
+import { readTrackingEnv } from './features/analytics/providers';
 import { getAttributionSnapshot } from './features/attribution/attribution';
 import { CheckoutCaptureModal } from './features/checkout/CheckoutCaptureModal';
 import {
   checkoutReducer,
+  canContinueToCheckout,
   createInitialCheckoutState,
   hasCheckoutErrors,
+  resolveCheckoutRedirectUrl,
+  toSelectedCheckoutTicket,
   validateCheckoutForm
 } from './features/checkout/checkout-state';
+import { TicketCarousel } from './features/pricing/TicketCarousel';
 import './styles.css';
 
 export function App() {
@@ -19,17 +24,55 @@ export function App() {
     createInitialCheckoutState
   );
   const lastTriggerRef = useRef<HTMLButtonElement | null>(null);
-  const analytics = useRef(createAnalytics()).current;
+  const analytics = useRef(createAnalytics(readTrackingEnv(import.meta.env))).current;
+  const hasTrackedLandingRef = useRef(false);
 
-  const openCheckoutCapture = (ctaOrigin: CtaOrigin, trigger: HTMLButtonElement) => {
+  useEffect(() => {
+    if (hasTrackedLandingRef.current) {
+      return;
+    }
+
+    hasTrackedLandingRef.current = true;
+    const attribution = getAttributionSnapshot('hero');
+    analytics.trackPageView(attribution);
+    analytics.trackViewContent(attribution);
+  }, [analytics]);
+
+  const openCheckoutCapture = (
+    ctaOrigin: CtaOrigin,
+    trigger: HTMLButtonElement,
+    ticket?: TicketCategory
+  ) => {
+    const selectedTicket = toSelectedCheckoutTicket(
+      ticket ?? eventContent.ticketCategories[0]!
+    );
     lastTriggerRef.current = trigger;
-    analytics.trackCtaClick(ctaOrigin);
-    dispatchCheckout({ type: 'open', ctaOrigin });
+    analytics.trackCtaClick({
+      ctaOrigin,
+      ticketType: selectedTicket.name,
+      ticketPrice: selectedTicket.price,
+      ticketVariant: selectedTicket.variant
+    });
+    analytics.trackLeadFormOpen(ctaOrigin);
+    dispatchCheckout({ type: 'open', ctaOrigin, ticket: selectedTicket });
   };
 
   const closeCheckoutCapture = () => {
     dispatchCheckout({ type: 'close' });
     window.setTimeout(() => lastTriggerRef.current?.focus(), 0);
+  };
+
+  const redirectToSelectedCheckout = (apiCheckoutUrl = '') => {
+    const checkoutUrl = resolveCheckoutRedirectUrl(
+      checkoutState.selectedTicket,
+      apiCheckoutUrl
+    );
+
+    if (!checkoutUrl) {
+      return;
+    }
+
+    window.location.assign(checkoutUrl);
   };
 
   useEffect(() => {
@@ -83,6 +126,7 @@ export function App() {
     }
 
     dispatchCheckout({ type: 'submit_started' });
+    analytics.trackLeadFormSubmit(checkoutState.ctaOrigin);
 
     try {
       const attribution = getAttributionSnapshot(checkoutState.ctaOrigin);
@@ -105,21 +149,35 @@ export function App() {
       }
 
       const result = (await response.json()) as LeadCaptureResponse;
+      const checkoutPrice = checkoutState.selectedTicket?.priceValue ?? 320;
+
       analytics.trackLead({ leadId: result.leadId, attribution });
-      analytics.trackBeginCheckout({ leadId: result.leadId, price: 320, currency: 'BRL' });
+      analytics.trackBeginCheckout({
+        leadId: result.leadId,
+        price: checkoutPrice,
+        currency: 'BRL'
+      });
 
       if (result.redirectAllowed) {
-        window.location.assign(result.checkoutUrl);
+        redirectToSelectedCheckout(result.checkoutUrl);
       }
     } catch {
       analytics.trackCheckoutRedirectFailed({
         ctaOrigin: checkoutState.ctaOrigin,
         errorCategory: 'lead_capture_failed'
       });
+
+      // API/proxy may be unavailable in local or degraded production.
+      // Never trap a valid form behind lead capture — go to the selected ticket.
+      if (canContinueToCheckout(checkoutState.selectedTicket)) {
+        redirectToSelectedCheckout();
+        return;
+      }
+
       dispatchCheckout({
         type: 'submit_failed',
         message:
-          'Não conseguimos registrar seus dados agora. Tente novamente ou continue para a inscrição.'
+          'Não conseguimos registrar seus dados agora. Você pode tentar de novo ou continuar para a inscrição.'
       });
     }
   };
@@ -168,8 +226,9 @@ export function App() {
       <ProgramSection />
       <SpeakersSection />
       <ExperienceSection />
-      <OfferSection onOpenCheckoutCapture={openCheckoutCapture} />
-      <LocationSection />
+      <PreEventSection />
+      <OfferSection analytics={analytics} onOpenCheckoutCapture={openCheckoutCapture} />
+      <LocationSection analytics={analytics} />
       <FaqSection />
       <FinalCtaSection onOpenCheckoutCapture={openCheckoutCapture} />
       <CheckoutCaptureModal
@@ -181,6 +240,7 @@ export function App() {
         isSubmitting={checkoutState.status === 'submitting'}
         onChange={(field, value) => dispatchCheckout({ type: 'change', field, value })}
         onClose={closeCheckoutCapture}
+        onContinueToCheckout={() => redirectToSelectedCheckout()}
         onSubmit={submitCheckoutCapture}
       />
     </main>
@@ -232,25 +292,41 @@ function HeroSection({
 }
 
 function ProgramSection() {
+  const { mainProgram } = eventContent;
+
   return (
     <section className="section section-dark" id="program">
       <SectionIntro
         eyebrow="Programação"
         title="Programação DOF Update 2026"
-        copy="Dois dias de conteúdo, prática e integração entre profissionais de diferentes áreas da saúde."
+        copy={mainProgram.description}
       />
-      <div className="program-grid">
-        {eventContent.program.map((program) => (
-          <article className="program-block" key={program.date}>
-            <p className="eyebrow">{program.date}</p>
-            <h3>{program.title}</h3>
-            <strong>{program.time}</strong>
-            <p>{program.description}</p>
-            <ul>
-              {program.agenda.map((agendaItem) => (
-                <li key={agendaItem}>{agendaItem}</li>
+      <div className="program-meta">
+        <span>{mainProgram.date}</span>
+        <span>{mainProgram.time}</span>
+        <span>{mainProgram.venue}</span>
+      </div>
+      <div className="program-milestones" aria-label="Marcos do dia">
+        {mainProgram.milestones.map((milestone) => (
+          <span key={milestone}>{milestone}</span>
+        ))}
+      </div>
+      <div className="program-schedule">
+        {mainProgram.periods.map((period) => (
+          <article className="program-period" key={period.label}>
+            <header className="program-period-header">
+              <p className="eyebrow">03 OUT</p>
+              <h3>{period.label}</h3>
+            </header>
+            <div className="program-talk-list">
+              {period.talks.map((talk) => (
+                <div className="program-talk" key={`${talk.speaker}-${talk.topic}`}>
+                  <h4>{talk.speaker}</h4>
+                  <p className="program-talk-topic">{talk.topic}</p>
+                  <span className="program-talk-profession">{talk.profession}</span>
+                </div>
               ))}
-            </ul>
+            </div>
           </article>
         ))}
       </div>
@@ -264,15 +340,28 @@ function SpeakersSection() {
       <SectionIntro
         eyebrow="Palestrantes"
         title="Quem estará no DOF Update 2026"
-        copy="Os nomes e credenciais definitivos devem ser inseridos apenas quando forem fornecidos pela organização."
+        copy={eventContent.speakersIntro[0] ?? ''}
       />
+      <p className="speakers-support">{eventContent.speakersIntro[1]}</p>
       <div className="speaker-grid">
         {eventContent.speakers.map((speaker) => (
           <article className="speaker-card" key={speaker.name}>
-            <div className="speaker-avatar" aria-hidden="true" />
+            {speaker.image ? (
+              <img
+                alt={speaker.name}
+                className="speaker-avatar speaker-avatar-photo"
+                height={96}
+                loading="lazy"
+                src={speaker.image}
+                width={96}
+              />
+            ) : (
+              <div className="speaker-avatar" aria-hidden="true" />
+            )}
             <h3>{speaker.name}</h3>
-            <p>{speaker.specialty}</p>
+            <p className="speaker-profession">{speaker.profession}</p>
             <small>{speaker.topic}</small>
+            <p className="speaker-bio">{speaker.bio}</p>
           </article>
         ))}
       </div>
@@ -293,64 +382,113 @@ function ExperienceSection() {
           <p key={item}>{item}</p>
         ))}
       </div>
-      <aside className="workshop-callout">
-        <p className="eyebrow">Workshop</p>
-        <h3>Workshop de Tecnologias para Dor</h3>
-        <p>{eventContent.workshopNotice}</p>
-      </aside>
+    </section>
+  );
+}
+
+function PreEventSection() {
+  const { preEvent } = eventContent;
+
+  return (
+    <section className="section section-pre-event" id="pre-event">
+      <div className="pre-event-banner">
+        <span className="pre-event-date-badge">{preEvent.dateLabel}</span>
+        <div>
+          <p className="eyebrow">Pré-evento</p>
+          <h2>{preEvent.title}</h2>
+          <h3>{preEvent.subtitle}</h3>
+        </div>
+      </div>
+      <div className="pre-event-meta">
+        <span>{preEvent.date}</span>
+        <span>{preEvent.time}</span>
+        <span>{preEvent.venue}</span>
+      </div>
+      <div className="pre-event-copy">
+        {preEvent.intro.map((paragraph) => (
+          <p key={paragraph}>{paragraph}</p>
+        ))}
+      </div>
+      <ul className="pre-event-notices">
+        {preEvent.notices.map((notice) => (
+          <li key={notice}>{notice}</li>
+        ))}
+      </ul>
+      <div className="workshop-grid">
+        {preEvent.workshops.map((workshop, index) => (
+          <article className="workshop-card" key={workshop.title}>
+            <p className="eyebrow">Workshop {String(index + 1).padStart(2, '0')}</p>
+            <h3>{workshop.title}</h3>
+            <div className="workshop-hosts">
+              {workshop.hosts.map((host) => (
+                <p key={`${workshop.title}-${host.name}`}>
+                  <strong>{host.name}</strong>
+                  <span>{host.profession}</span>
+                </p>
+              ))}
+            </div>
+          </article>
+        ))}
+      </div>
+      <div className="pre-event-guests">
+        <h3>Convidados do pré-evento</h3>
+        <div className="guest-grid">
+          {preEvent.guests.map((guest) => (
+            <article className="guest-card" key={guest.name}>
+              <h4>{guest.name}</h4>
+              <p className="speaker-profession">{guest.profession}</p>
+              <p>{guest.bio}</p>
+            </article>
+          ))}
+        </div>
+      </div>
     </section>
   );
 }
 
 function OfferSection({
+  analytics,
   onOpenCheckoutCapture
 }: {
-  onOpenCheckoutCapture: (ctaOrigin: CtaOrigin, trigger: HTMLButtonElement) => void;
+  analytics: Analytics;
+  onOpenCheckoutCapture: (
+    ctaOrigin: CtaOrigin,
+    trigger: HTMLButtonElement,
+    ticket?: TicketCategory
+  ) => void;
 }) {
   return (
     <section className="section offer-section" id="offer">
-      <div>
+      <div className="offer-copy">
         <p className="eyebrow">{eventContent.lot}</p>
         <h2>Garanta sua vaga no DOF Update 2026</h2>
-        <p>
-          {eventContent.edition}. Um dia inteiro de atualização científica, integração entre especialidades e
-          discussões voltadas para a prática clínica.
-        </p>
-        <CheckoutButton ctaOrigin="offer" onOpen={onOpenCheckoutCapture}>
-          {eventContent.primaryCta}
-        </CheckoutButton>
-        <p className="cta-support">{eventContent.ctaMicrocopy}</p>
-        <a className="even3-inline-link" href={eventContent.even3RegistrationUrl} rel="noreferrer" target="_blank">
-          Abrir página oficial na Even3
-        </a>
-        <p className="scarcity-note">{eventContent.scarcityNote}</p>
+        <p>Escolha a categoria da sua inscrição. Estamos no último lote.</p>
       </div>
-      <div className="price-box">
-        <span>{eventContent.lot}</span>
-        <h3>Ingressos por categoria</h3>
-        <p>Valores oficiais da Even3 válidos {eventContent.ticketValidity}, sujeitos à disponibilidade.</p>
-        <div className="ticket-grid">
-          {eventContent.ticketCategories.map((ticket) => (
-            <article className="ticket-card" key={ticket.name}>
-              <div>
-                <h4>{ticket.name}</h4>
-                {ticket.badge ? <span className="ticket-badge">{ticket.badge}</span> : null}
-              </div>
-              <strong>{ticket.price}</strong>
-              <small>{ticket.validUntil}</small>
-              <a href={eventContent.even3RegistrationUrl} rel="noreferrer" target="_blank">
-                Ver na Even3
-              </a>
-            </article>
-          ))}
-        </div>
-      </div>
+
+      <TicketCarousel
+        ctaLabel={eventContent.primaryCta}
+        onSelectTicket={(ticket, trigger) =>
+          onOpenCheckoutCapture('pricing_carousel', trigger, ticket)
+        }
+        tickets={eventContent.ticketCategories}
+      />
+
+      <p className="cta-support offer-microcopy">{eventContent.ctaMicrocopy}</p>
+      <a className="even3-inline-link" href={eventContent.even3RegistrationUrl} rel="noreferrer" target="_blank">
+        Abrir página oficial na Even3
+      </a>
+
       <div className="group-box">
         <h3>{eventContent.groupOffer.title}</h3>
         {eventContent.groupOffer.items.map((item) => (
           <p key={item}>{item}</p>
         ))}
-        <a href={eventContent.groupOffer.url} rel="noreferrer" target="_blank">
+        <a
+          href={eventContent.groupOffer.url}
+          onClick={() => analytics.trackGroupInterest('offer')}
+          rel="noreferrer"
+          target="_blank"
+        >
           {eventContent.groupOffer.cta}
         </a>
       </div>
@@ -358,7 +496,7 @@ function OfferSection({
   );
 }
 
-function LocationSection() {
+function LocationSection({ analytics }: { analytics: Analytics }) {
   return (
     <section className="section section-light" id="location">
       <SectionIntro
@@ -380,6 +518,7 @@ function LocationSection() {
         <a
           className="button button-secondary"
           href={eventContent.location.mapsDirectionsUrl}
+          onClick={() => analytics.trackMapOpen('location')}
           rel="noreferrer"
           target="_blank"
         >

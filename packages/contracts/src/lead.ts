@@ -12,6 +12,7 @@ export const ctaOriginSchema = z.enum([
   'experience',
   'workshop_cross_sell',
   'offer',
+  'pricing_carousel',
   'location',
   'faq',
   'final',

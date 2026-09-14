@@ -38,6 +38,13 @@ Criar uma landing page oficial rápida, confiável e informativa que:
 - Vagas limitadas.
 - É necessário estar inscrito no evento principal para participar.
 - A inscrição no evento principal não garante vaga automática no workshop.
+- Quatro workshops confirmados (eletromiografia, zumbido somatossensorial, gestão de consultório, eletroestimulação).
+- Convidados confirmados do pré-evento: Erika Galiza, Sheila Paiva, Benedito Carvalho, Marcelo Carvalho.
+
+## Evento principal — autoridade científica
+- 10 palestrantes confirmados com temas oficiais.
+- Programação apresentada em Manhã e Tarde (sem horários individuais inventados).
+- Nídia Marinho confirmada na grade da tarde.
 
 ## Público
 A comunicação oficial deve contemplar principalmente:

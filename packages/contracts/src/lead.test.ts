@@ -63,6 +63,7 @@ describe('lead contracts', () => {
 
   it('keeps CTA origins and lead statuses aligned with the funnel docs', () => {
     expect(ctaOriginSchema.parse('sticky_mobile')).toBe('sticky_mobile');
+    expect(ctaOriginSchema.parse('pricing_carousel')).toBe('pricing_carousel');
     expect(leadStatusSchema.parse('PURCHASED')).toBe('PURCHASED');
     expect(ctaOriginSchema.safeParse('direct_checkout').success).toBe(false);
     expect(leadStatusSchema.safeParse('BUYER').success).toBe(false);

@@ -137,55 +137,32 @@ O objetivo do DOF Update não é apenas apresentar informação. É criar um amb
 
 # Programação DOF Update 2026
 
-Dois dias de conteúdo, prática e integração entre profissionais de diferentes áreas da saúde.
+Um dia inteiro de atualização científica e discussão clínica com profissionais de diferentes especialidades reunidos em torno da DTM, dor orofacial, sono e cuidado interprofissional.
 
-A programação foi estruturada para proporcionar uma experiência que combina **atualização científica, aplicação clínica, demonstrações práticas e troca interprofissional.**
-
-### 02 de outubro — Pré-evento
-## Workshop de Tecnologias para Dor
-**18h30 às 20h30**  
+**03 de outubro de 2026**  
+**07h30 às 18h45**  
 **Auditório da FAESA — Vitória/ES**
 
-Uma experiência prática e demonstrativa voltada para tecnologias e tratamentos adjuvantes utilizados no manejo da dor.
+Marcos confirmados:
+- Credenciamento: 07h30
+- Abertura: 08h00
+- Encerramento: 18h45
 
-Ao longo do workshop, especialistas e empresas do setor apresentarão recursos, aplicações e possibilidades terapêuticas que vêm ganhando espaço na prática clínica.
+Horários individuais das palestras ainda não foram publicados. Apresentar a grade por período:
 
-**O que você encontrará:** demonstrações práticas; tecnologias aplicadas ao controle da dor; tratamentos adjuvantes; discussão de indicações e possibilidades clínicas; contato com especialistas e empresas do setor.
+### Manhã
+- Raí Santiago — Fonoaudiólogo — Dor orofacial e DTM: o papel da fonoaudiologia na avaliação e reabilitação funcional
+- Gabriela Vendolin — Cirurgiã-dentista — DTM: passado, presente e futuro — da ciência à tomada de decisão clínica
+- Thays Crosara — Cirurgiã-dentista — Sono, DTM e dor orofacial — fundamentos para a prática clínica
+- Juliana Stuginski — Cirurgiã-dentista — IA na rotina clínica de DTM e Dor Orofacial
 
-#### Agenda do workshop
-- 18h30 — Abertura e apresentação
-- [HORÁRIO] — [TEMA / TECNOLOGIA] — [PALESTRANTE / SPEAKER]
-- [HORÁRIO] — [TEMA / TECNOLOGIA] — [PALESTRANTE / SPEAKER]
-- [HORÁRIO] — [TEMA / TECNOLOGIA] — [PALESTRANTE / SPEAKER]
-- 20h30 — Encerramento
-
-**Atenção:** a participação no workshop não está incluída automaticamente na inscrição do evento principal. As vagas são limitadas e é necessária inscrição específica. Para participar, também é necessário estar inscrito no DOF Update 2026.
-
-### 03 de outubro — Evento principal
-## III Imersão Interprofissional em DTM e Dores Orofaciais
-**7h30 às 18h45**  
-**Auditório da FAESA — Vitória/ES**
-
-Um dia inteiro de atualização científica e discussão clínica com profissionais de diferentes especialidades reunidos em torno de DTM, dores orofaciais, sono e cuidado interprofissional.
-
-#### Agenda principal
-- 07h30 — Credenciamento
-- [HORÁRIO] — [TÍTULO DA PALESTRA] — [PALESTRANTE 01]
-- [HORÁRIO] — [TÍTULO DA PALESTRA] — [PALESTRANTE 02]
-- [HORÁRIO] — Intervalo
-- [HORÁRIO] — [TÍTULO DA PALESTRA] — [PALESTRANTE 03]
-- [HORÁRIO] — [TÍTULO DA PALESTRA] — [PALESTRANTE 04]
-- [HORÁRIO] — Intervalo para almoço
-- [HORÁRIO] — [TÍTULO DA PALESTRA] — [PALESTRANTE 05]
-- [HORÁRIO] — [TÍTULO DA PALESTRA] — [PALESTRANTE 06]
-- [HORÁRIO] — Coffee Break e Networking
-- [HORÁRIO] — [PALESTRA / MESA / DISCUSSÃO]
-- 18h45 — Encerramento
-
-### Um dia inteiro para atualizar a forma como você enxerga o paciente
-Ciência, diferentes especialidades e experiências clínicas reunidas em uma programação construída para profissionais que buscam uma atuação cada vez mais fundamentada e integrada.
-
-**Último lote: R$ 320**
+### Tarde
+- Márcia Targino — Fisioterapeuta — Trismo no câncer de cabeça e pescoço
+- Roberto Garanhani — Cirurgião-dentista — Bruxismo, placa e DTM: como, quando e por quê?
+- Guacyra Muzzi — Médica — Dores orofaciais persistentes: da terapia farmacológica à intervenção
+- Thiago Motta — Fisioterapeuta — Influência da coluna cervical nas DTMs: onde estamos?
+- Bruna Cabugueira — Fisioterapeuta — Zumbido e DTM: conexões neurofuncionais e caminhos terapêuticos
+- Nídia Marinho — Cirurgiã-dentista — Remodelação ou degeneração? O que a tomografia nos conta sobre a ATM
 
 **CTA:** GARANTIR MINHA VAGA
 
@@ -195,22 +172,11 @@ Ciência, diferentes especialidades e experiências clínicas reunidas em uma pr
 
 # Quem estará no DOF Update 2026
 
-O DOF Update reúne profissionais que atuam diretamente com **DTM, dor orofacial, sono, neurofisiologia e manejo clínico interdisciplinar**.
+O DOF Update reúne profissionais de diferentes áreas que atuam diretamente nos desafios relacionados à DTM, dor orofacial, sono, neurofisiologia e cuidado interprofissional.
 
-A proposta é trazer diferentes perspectivas para um mesmo desafio: **compreender melhor o paciente e tomar decisões clínicas mais seguras, atuais e baseadas em evidências.**
+Diferentes especialidades, perspectivas complementares e um mesmo objetivo: transformar conhecimento científico em decisões clínicas mais seguras.
 
-Cards data-driven:
-- [PALESTRANTE 01] — [ESPECIALIDADE / TITULAÇÃO] — [MINI BIO] — [TEMA]
-- [PALESTRANTE 02] — [ESPECIALIDADE / TITULAÇÃO] — [MINI BIO] — [TEMA]
-- [PALESTRANTE 03] — [ESPECIALIDADE / TITULAÇÃO] — [MINI BIO] — [TEMA]
-- [PALESTRANTE 04] — [ESPECIALIDADE / TITULAÇÃO] — [MINI BIO] — [TEMA]
-- [PALESTRANTE 05] — [ESPECIALIDADE / TITULAÇÃO] — [MINI BIO] — [TEMA]
-- [PALESTRANTE 06] — [ESPECIALIDADE / TITULAÇÃO] — [MINI BIO] — [TEMA]
-
-## Diferentes especialidades, uma visão mais completa
-Ao reunir referências de áreas distintas, o DOF Update cria uma experiência que vai além de palestras isoladas.
-
-Você acompanha diferentes perspectivas sobre **diagnóstico, dor, sono, farmacologia e tratamento**, entendendo como cada área pode contribuir na construção de um cuidado mais integrado.
+Cards data-driven dos 10 palestrantes confirmados (nome, profissão, tema e mini bio oficial). Ver `CONTENT.md` e `apps/web/src/content/event.ts`.
 
 **CTA:** GARANTIR MINHA VAGA NO DOF UPDATE 2026
 
@@ -245,39 +211,34 @@ Se você busca atualização, integração entre áreas e uma prática cada vez 
 
 ---
 
-## 08 — WORKSHOP
+## 08 — WORKSHOP / PRÉ-EVENTO
 
 # Amplie sua experiência no DOF Update 2026
 
 ## Workshop de Tecnologias para Dor
 
-Na véspera do evento principal, o DOF Update abre espaço para uma experiência prática e demonstrativa dedicada a **tecnologias e tratamentos adjuvantes aplicados ao controle da dor**.
+Na véspera do evento principal, o DOF Update abre espaço para uma experiência prática e demonstrativa dedicada a tecnologias, abordagens e temas complementares à prática clínica.
+
+Os workshops possuem vagas limitadas e inscrição específica.
 
 **02 de outubro de 2026**  
 **18h30 às 20h30**  
 **Auditório da FAESA — Vitória/ES**
 
-O workshop foi pensado para profissionais que desejam conhecer, de forma mais próxima, recursos e tecnologias que vêm sendo incorporados à prática clínica.
+### Workshops confirmados
+1. Eletromiografia na percepção e conduta terapêutica do bruxismo e da dor orofacial — Gabriela Vendolin (Cirurgiã-dentista)
+2. Manejo Interprofissional do Zumbido Somatossensorial — Erika Galiza (Fisioterapeuta) e Sheila Paiva (Fonoaudióloga)
+3. Gerenciamento Estratégico do Consultório de Dor Orofacial — Benedito Carvalho e Marcelo Carvalho (Contadores)
+4. Eletroestimulação na DTM — Benedita Barbosa (Fisioterapeuta)
 
-Durante a atividade, empresas do setor e speakers convidados apresentarão aplicações, possibilidades terapêuticas e diferentes recursos utilizados no manejo da dor.
+### Convidados do pré-evento
+Erika Galiza, Sheila Paiva, Benedito Carvalho, Marcelo Carvalho.
 
-### O que você encontrará
-- demonstrações práticas;
-- tecnologias aplicadas ao controle da dor;
-- tratamentos adjuvantes;
-- discussão de aplicações clínicas;
-- contato com especialistas e empresas do setor;
-- espaço para conhecer recursos e possibilidades terapêuticas.
-
-## Vagas limitadas
-O workshop possui quantidade limitada de participantes para preservar a qualidade da experiência.
-
-A inscrição no **DOF Update 2026 não garante automaticamente uma vaga no workshop.** Para participar, é necessário estar inscrito no evento principal e realizar uma inscrição específica para o workshop.
-
-### Condição especial
-Consulte as condições de participação e possível isenção destinadas aos primeiros inscritos.
-
-**CTA:** QUERO PARTICIPAR DO WORKSHOP
+### Regras de participação
+- o pré-evento é atividade complementar;
+- é necessário estar inscrito no evento principal;
+- a inscrição no evento principal não garante vaga automática no workshop;
+- vagas limitadas e inscrição específica.
 
 Microcopy: O workshop é atividade complementar e possui inscrição independente do evento principal.
 

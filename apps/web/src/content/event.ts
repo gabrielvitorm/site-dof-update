@@ -9,20 +9,62 @@ export interface ScientificPillar {
   focus: string;
 }
 
-export interface ProgramBlock {
+export interface TalkItem {
+  speaker: string;
+  profession: string;
+  topic: string;
+}
+
+export interface ProgramPeriod {
+  label: 'Manhã' | 'Tarde';
+  talks: TalkItem[];
+}
+
+export interface MainProgram {
   date: string;
   title: string;
   time: string;
+  venue: string;
   description: string;
-  agenda: string[];
+  milestones: string[];
+  periods: ProgramPeriod[];
 }
 
-export interface SpeakerPlaceholder {
+export interface Speaker {
   name: string;
-  specialty: string;
+  profession: string;
   bio: string;
   topic: string;
   image: string | null;
+}
+
+export interface WorkshopHost {
+  name: string;
+  profession: string;
+}
+
+export interface Workshop {
+  title: string;
+  hosts: WorkshopHost[];
+}
+
+export interface PreEventGuest {
+  name: string;
+  profession: string;
+  bio: string;
+}
+
+export interface PreEvent {
+  dateLabel: string;
+  date: string;
+  title: string;
+  subtitle: string;
+  time: string;
+  venue: string;
+  intro: string[];
+  notices: string[];
+  workshops: Workshop[];
+  guests: PreEventGuest[];
 }
 
 export interface FaqItem {
@@ -31,10 +73,16 @@ export interface FaqItem {
 }
 
 export interface TicketCategory {
+  id: string;
   name: string;
   price: string;
+  priceValue: number;
   validUntil: string;
+  variant: 'main' | 'combo';
+  summary: string[];
+  checkoutUrl: string;
   badge?: string;
+  secondaryBadge?: string;
 }
 
 export const eventContent = {
@@ -44,7 +92,7 @@ export const eventContent = {
   intro:
     'Um encontro presencial para profissionais que desejam aprofundar sua atuação em Disfunções Temporomandibulares, Dores Orofaciais, Sono e abordagens interprofissionais.',
   date: '03 de outubro de 2026',
-  time: '7h30 às 18h45',
+  time: '07h30 às 18h45',
   venue: 'Auditório da FAESA',
   city: 'Vitória, ES',
   price: 'R$ 320',
@@ -57,38 +105,104 @@ export const eventContent = {
   scarcityNote: 'Valores por categoria disponíveis até 01/10/2026 ou enquanto houver vagas.',
   even3RegistrationUrl:
     'https://www.even3.com.br/dof-update-iii-imersao-interprofissional-em-dtm-e-dores-orofaciais-698642/',
+  even3WidgetScriptUrl:
+    'https://www.even3.com.br/widget/js?e=dof-update-iii-imersao-interprofissional-em-dtm-e-dores-orofaciais-698642&t=ticket&lang=pt',
   ticketValidity: 'até 01/10/2026',
   ticketCategories: [
     {
+      id: 'profissionais',
       name: 'Profissionais',
-      price: 'R$320,00',
-      validUntil: 'até 01/10/2026'
-    },
-    {
-      name: 'Aluno de graduação',
-      price: 'R$230,00',
-      validUntil: 'até 01/10/2026'
-    },
-    {
-      name: 'Profissionais sócios adimplentes ABRAFITO',
-      price: 'R$272,00',
-      validUntil: 'até 01/10/2026'
-    },
-    {
-      name: 'Profissionais evento + pré-evento',
-      price: 'R$380,00',
+      price: 'R$ 320,00',
+      priceValue: 320,
       validUntil: 'até 01/10/2026',
-      badge: 'Últimas vagas'
+      variant: 'main',
+      checkoutUrl:
+        'https://www.even3.com.br/auxcheckout/redirect?urlEvento=dof-update-iii-imersao-interprofissional-em-dtm-e-dores-orofaciais-698642&idIngresso=820401&lang=pt',
+      summary: [
+        'Acesso ao evento principal',
+        'Programação científica completa',
+        'Experiência presencial',
+        'Networking interprofissional'
+      ]
     },
     {
+      id: 'aluno-graduacao',
+      name: 'Aluno de graduação',
+      price: 'R$ 230,00',
+      priceValue: 230,
+      validUntil: 'até 01/10/2026',
+      variant: 'main',
+      checkoutUrl:
+        'https://www.even3.com.br/auxcheckout/redirect?urlEvento=dof-update-iii-imersao-interprofissional-em-dtm-e-dores-orofaciais-698642&idIngresso=820404&lang=pt',
+      summary: [
+        'Inscrição na categoria aluno de graduação',
+        'Acesso ao evento principal do dia 03/10',
+        'Experiência presencial no Auditório da FAESA'
+      ]
+    },
+    {
+      id: 'profissionais-abrafito',
+      name: 'Profissionais sócios adimplentes ABRAFITO',
+      price: 'R$ 272,00',
+      priceValue: 272,
+      validUntil: 'até 01/10/2026',
+      variant: 'main',
+      checkoutUrl:
+        'https://www.even3.com.br/auxcheckout/redirect?urlEvento=dof-update-iii-imersao-interprofissional-em-dtm-e-dores-orofaciais-698642&idIngresso=840321&lang=pt',
+      summary: [
+        'Condição para sócios adimplentes ABRAFITO',
+        'Acesso ao evento principal',
+        'Experiência presencial e networking'
+      ]
+    },
+    {
+      id: 'profissionais-combo',
+      name: 'Profissionais evento + pré-evento',
+      price: 'R$ 380,00',
+      priceValue: 380,
+      validUntil: 'até 01/10/2026',
+      variant: 'combo',
+      badge: 'Últimas vagas',
+      secondaryBadge: 'Evento + Pré-evento',
+      checkoutUrl:
+        'https://www.even3.com.br/auxcheckout/redirect?urlEvento=dof-update-iii-imersao-interprofissional-em-dtm-e-dores-orofaciais-698642&idIngresso=850856&lang=pt',
+      summary: [
+        'Evento principal + Workshop de Tecnologias para Dor',
+        'Inscrição combinada no último lote',
+        'Experiência presencial em dois dias'
+      ]
+    },
+    {
+      id: 'aluno-combo',
       name: 'Alunos de graduação evento + pré-evento',
-      price: 'R$290,00',
-      validUntil: 'até 01/10/2026'
+      price: 'R$ 290,00',
+      priceValue: 290,
+      validUntil: 'até 01/10/2026',
+      variant: 'combo',
+      secondaryBadge: 'Evento + Pré-evento',
+      checkoutUrl:
+        'https://www.even3.com.br/auxcheckout/redirect?urlEvento=dof-update-iii-imersao-interprofissional-em-dtm-e-dores-orofaciais-698642&idIngresso=850858&lang=pt',
+      summary: [
+        'Categoria aluno com evento + pré-evento',
+        'Workshop complementar no dia 02/10',
+        'Experiência presencial no Auditório da FAESA'
+      ]
     },
     {
+      id: 'abrafito-combo',
       name: 'Profissionais sócios adimplentes ABRAFITO evento + pré-evento',
-      price: 'R$332,00',
-      validUntil: 'até 01/10/2026'
+      price: 'R$ 332,00',
+      priceValue: 332,
+      validUntil: 'até 01/10/2026',
+      variant: 'combo',
+      secondaryBadge: 'Evento + Pré-evento',
+      checkoutUrl:
+        'https://www.even3.com.br/auxcheckout/redirect?urlEvento=dof-update-iii-imersao-interprofissional-em-dtm-e-dores-orofaciais-698642&idIngresso=850860&lang=pt',
+      summary: [
+        'Condição ABRAFITO com evento + pré-evento',
+        'Workshop complementar no dia 02/10',
+        'Experiência presencial em dois dias'
+      ]
     }
   ] satisfies TicketCategory[],
   whyParticipate:
@@ -147,42 +261,155 @@ export const eventContent = {
       focus: 'Integração, comunicação clínica, encaminhamento e redes profissionais.'
     }
   ] satisfies ScientificPillar[],
-  program: [
+  mainProgram: {
+    date: '03 de outubro de 2026',
+    title: 'III Imersão Interprofissional em DTM e Dores Orofaciais',
+    time: '07h30 às 18h45',
+    venue: 'Auditório da FAESA — Vitória/ES',
+    description:
+      'Um dia inteiro de atualização científica e discussão clínica com profissionais de diferentes especialidades reunidos em torno da DTM, dor orofacial, sono e cuidado interprofissional.',
+    milestones: ['Credenciamento: 07h30', 'Abertura: 08h00', 'Encerramento: 18h45'],
+    periods: [
+      {
+        label: 'Manhã',
+        talks: [
+          {
+            speaker: 'Raí Santiago',
+            profession: 'Fonoaudiólogo',
+            topic:
+              'Dor orofacial e DTM: o papel da fonoaudiologia na avaliação e reabilitação funcional'
+          },
+          {
+            speaker: 'Gabriela Vendolin',
+            profession: 'Cirurgiã-dentista',
+            topic: 'DTM: passado, presente e futuro — da ciência à tomada de decisão clínica'
+          },
+          {
+            speaker: 'Thays Crosara',
+            profession: 'Cirurgiã-dentista',
+            topic: 'Sono, DTM e dor orofacial — fundamentos para a prática clínica'
+          },
+          {
+            speaker: 'Juliana Stuginski',
+            profession: 'Cirurgiã-dentista',
+            topic: 'IA na rotina clínica de DTM e Dor Orofacial'
+          }
+        ]
+      },
+      {
+        label: 'Tarde',
+        talks: [
+          {
+            speaker: 'Márcia Targino',
+            profession: 'Fisioterapeuta',
+            topic: 'Trismo no câncer de cabeça e pescoço'
+          },
+          {
+            speaker: 'Roberto Garanhani',
+            profession: 'Cirurgião-dentista',
+            topic: 'Bruxismo, placa e DTM: como, quando e por quê?'
+          },
+          {
+            speaker: 'Guacyra Muzzi',
+            profession: 'Médica',
+            topic: 'Dores orofaciais persistentes: da terapia farmacológica à intervenção'
+          },
+          {
+            speaker: 'Thiago Motta',
+            profession: 'Fisioterapeuta',
+            topic: 'Influência da coluna cervical nas DTMs: onde estamos?'
+          },
+          {
+            speaker: 'Bruna Cabugueira',
+            profession: 'Fisioterapeuta',
+            topic: 'Zumbido e DTM: conexões neurofuncionais e caminhos terapêuticos'
+          },
+          {
+            speaker: 'Nídia Marinho',
+            profession: 'Cirurgiã-dentista',
+            topic: 'Remodelação ou degeneração? O que a tomografia nos conta sobre a ATM'
+          }
+        ]
+      }
+    ]
+  } satisfies MainProgram,
+  speakersIntro: [
+    'O DOF Update reúne profissionais de diferentes áreas que atuam diretamente nos desafios relacionados à DTM, dor orofacial, sono, neurofisiologia e cuidado interprofissional.',
+    'Diferentes especialidades, perspectivas complementares e um mesmo objetivo: transformar conhecimento científico em decisões clínicas mais seguras.'
+  ],
+  speakers: [
     {
-      date: '02 de outubro de 2026',
-      title: 'Workshop de Tecnologias para Dor',
-      time: '18h30 às 20h30',
-      description:
-        'Uma experiência prática e demonstrativa voltada para tecnologias e tratamentos adjuvantes utilizados no manejo da dor.',
-      agenda: [
-        '18h30 - Abertura e apresentação',
-        '[HORÁRIO] - [TEMA / TECNOLOGIA] - [PALESTRANTE / SPEAKER]',
-        '[HORÁRIO] - [TEMA / TECNOLOGIA] - [PALESTRANTE / SPEAKER]',
-        '20h30 - Encerramento'
-      ]
+      name: 'Raí Santiago',
+      profession: 'Fonoaudiólogo',
+      bio: 'Fonoaudiólogo pela UFES, especialista em Fonoaudiologia Neurofuncional, Disfagia e Motricidade Orofacial, certificado em Fonoaudiologia do Sono e mestre em Ciências Fisiológicas.',
+      topic:
+        'Dor orofacial e DTM: o papel da fonoaudiologia na avaliação e reabilitação funcional',
+      image: '/speakers/rai-santiago.webp'
     },
     {
-      date: '03 de outubro de 2026',
-      title: 'III Imersão Interprofissional em DTM e Dores Orofaciais',
-      time: '7h30 às 18h45',
-      description:
-        'Um dia inteiro de atualização científica e discussão clínica com diferentes especialidades reunidas em torno de DTM, dores orofaciais, sono e cuidado interprofissional.',
-      agenda: [
-        '07h30 - Credenciamento',
-        '[HORÁRIO] - [TÍTULO DA PALESTRA] - [PALESTRANTE 01]',
-        '[HORÁRIO] - Intervalo',
-        '[HORÁRIO] - [PALESTRA / MESA / DISCUSSÃO]',
-        '18h45 - Encerramento'
-      ]
+      name: 'Gabriela Vendolin',
+      profession: 'Cirurgiã-dentista',
+      bio: 'Especialista em DTM e Dor Orofacial pela FOB/USP, mestre e doutora em Odontologia, certificada em Odontologia do Sono e com mais de 20 anos de atuação.',
+      topic: 'DTM: passado, presente e futuro — da ciência à tomada de decisão clínica',
+      image: '/speakers/gabriela-vendolin.png'
+    },
+    {
+      name: 'Thays Crosara',
+      profession: 'Cirurgiã-dentista',
+      bio: 'Cirurgiã-dentista, mestre em Ciências da Saúde com atuação em Medicina do Sono e doutora em Clínica Odontológica e Odontologia do Sono.',
+      topic: 'Sono, DTM e dor orofacial — fundamentos para a prática clínica',
+      image: '/speakers/thays-crosara.webp'
+    },
+    {
+      name: 'Juliana Stuginski',
+      profession: 'Cirurgiã-dentista',
+      bio: 'Cirurgiã-dentista pela USP, mestre em Neurociências, doutora em Reabilitação Oral e especialista em DTM e Dor Orofacial.',
+      topic: 'IA na rotina clínica de DTM e Dor Orofacial',
+      image: '/speakers/juliana-stuginski.webp'
+    },
+    {
+      name: 'Márcia Targino',
+      profession: 'Fisioterapeuta',
+      bio: 'Fisioterapeuta pela UFRJ, especialista em Fisioterapia em Cancerologia, mestre e doutora, com atuação docente na Residência Multiprofissional do INCA.',
+      topic: 'Trismo no câncer de cabeça e pescoço',
+      image: '/speakers/marcia-targino.webp'
+    },
+    {
+      name: 'Roberto Garanhani',
+      profession: 'Cirurgião-dentista',
+      bio: 'Cirurgião-dentista, mestre em Odontologia e Implantodontia, especialista em Prótese, DTM e Dor Orofacial.',
+      topic: 'Bruxismo, placa e DTM: como, quando e por quê?',
+      image: '/speakers/roberto-garanhani.webp'
+    },
+    {
+      name: 'Guacyra Muzzi',
+      profession: 'Médica',
+      bio: 'Médica anestesiologista e especialista no tratamento da dor, responsável pelo Ambulatório de Dor Crônica do Hospital Santa Rita de Cássia.',
+      topic: 'Dores orofaciais persistentes: da terapia farmacológica à intervenção',
+      image: '/speakers/guacyra-muzzi.webp'
+    },
+    {
+      name: 'Thiago Motta',
+      profession: 'Fisioterapeuta',
+      bio: 'Fisioterapeuta e osteopata, especialista em Osteopatia, Dor Orofacial e DTM, coordenador da EOM Vitória e professor de pós-graduação.',
+      topic: 'Influência da coluna cervical nas DTMs: onde estamos?',
+      image: '/speakers/thiago-motta.webp'
+    },
+    {
+      name: 'Bruna Cabugueira',
+      profession: 'Fisioterapeuta',
+      bio: 'Fisioterapeuta com atuação em zumbido, tontura, DTM e dor orofacial, com formação em agulhamento a seco, acupuntura e terapia crânio-cervicomandibular.',
+      topic: 'Zumbido e DTM: conexões neurofuncionais e caminhos terapêuticos',
+      image: '/speakers/bruna-cabugueira.webp'
+    },
+    {
+      name: 'Nídia Marinho',
+      profession: 'Cirurgiã-dentista',
+      bio: 'Mestre em Ciências da Saúde, especialista em Cirurgia Buco-Maxilo-Facial e Implantodontia, com fellowship em Cirurgia Crânio-Maxilo-Facial e atuação em diagnóstico digital da face.',
+      topic: 'Remodelação ou degeneração? O que a tomografia nos conta sobre a ATM',
+      image: '/speakers/nidia-marinho.png'
     }
-  ] satisfies ProgramBlock[],
-  speakers: Array.from({ length: 6 }, (_, index) => ({
-    name: `[PALESTRANTE ${String(index + 1).padStart(2, '0')}]`,
-    specialty: '[ESPECIALIDADE / TITULAÇÃO]',
-    bio: '[MINI BIO]',
-    topic: '[TEMA]',
-    image: null
-  })) satisfies SpeakerPlaceholder[],
+  ] satisfies Speaker[],
   differentiators: [
     'Ciência conectada à realidade clínica',
     'Diferentes especialidades no mesmo ambiente',
@@ -190,8 +417,70 @@ export const eventContent = {
     'Experiência exclusivamente presencial',
     'Conteúdo ao vivo, sem gravação posterior'
   ],
-  workshopNotice:
-    'A inscrição no DOF Update 2026 não garante automaticamente uma vaga no workshop. Para participar, é necessário estar inscrito no evento principal e realizar uma inscrição específica. O valor do workshop é cobrado à parte, com vagas limitadas.',
+  preEvent: {
+    dateLabel: '02 OUT',
+    date: '02 de outubro de 2026',
+    title: 'Amplie sua experiência no DOF Update 2026',
+    subtitle: 'Workshop de Tecnologias para Dor',
+    time: '18h30 às 20h30',
+    venue: 'Auditório da FAESA — Vitória/ES',
+    intro: [
+      'Na véspera do evento principal, o DOF Update abre espaço para uma experiência prática e demonstrativa dedicada a tecnologias, abordagens e temas complementares à prática clínica.',
+      'Os workshops possuem vagas limitadas e inscrição específica.'
+    ],
+    notices: [
+      'O pré-evento é uma atividade complementar ao DOF Update 2026.',
+      'É necessário estar inscrito no evento principal para participar.',
+      'A inscrição no evento principal não garante automaticamente uma vaga no workshop.',
+      'As vagas são limitadas e a inscrição do pré-evento é específica.'
+    ],
+    workshops: [
+      {
+        title: 'Eletromiografia na percepção e conduta terapêutica do bruxismo e da dor orofacial',
+        hosts: [{ name: 'Gabriela Vendolin', profession: 'Cirurgiã-dentista' }]
+      },
+      {
+        title: 'Manejo Interprofissional do Zumbido Somatossensorial',
+        hosts: [
+          { name: 'Erika Galiza', profession: 'Fisioterapeuta' },
+          { name: 'Sheila Paiva', profession: 'Fonoaudióloga' }
+        ]
+      },
+      {
+        title: 'Gerenciamento Estratégico do Consultório de Dor Orofacial',
+        hosts: [
+          { name: 'Benedito Carvalho', profession: 'Contador' },
+          { name: 'Marcelo Carvalho', profession: 'Contador' }
+        ]
+      },
+      {
+        title: 'Eletroestimulação na DTM',
+        hosts: [{ name: 'Benedita Barbosa', profession: 'Fisioterapeuta' }]
+      }
+    ],
+    guests: [
+      {
+        name: 'Erika Galiza',
+        profession: 'Fisioterapeuta',
+        bio: 'Fisioterapeuta com atuação em zumbido somatossensorial, DTM, dor orofacial, cervicalgia e tontura, com abordagem baseada em raciocínio clínico e manejo interdisciplinar.'
+      },
+      {
+        name: 'Sheila Paiva',
+        profession: 'Fonoaudióloga',
+        bio: 'Fonoaudióloga, professora do Departamento de Fonoaudiologia da UFES, especialista em Audiologia e com atuação em audição, equilíbrio e zumbido.'
+      },
+      {
+        name: 'Benedito Carvalho',
+        profession: 'Contador',
+        bio: 'Contador, especialista em gestão para profissionais da saúde, sócio-fundador da Alphaon Gestão Financeira e com mais de 30 anos de experiência no setor.'
+      },
+      {
+        name: 'Marcelo Carvalho',
+        profession: 'Contador',
+        bio: 'Contador com especialização em gestão financeira para profissionais da saúde e sócio-fundador da Alphaon Gestão Financeira.'
+      }
+    ]
+  } satisfies PreEvent,
   groupOffer: {
     title: 'Condições especiais para grupos',
     items: ['5 participantes - 10% de desconto', '10 participantes - 15% de desconto'],
@@ -214,7 +503,7 @@ export const eventContent = {
     {
       question: 'Quando acontece o DOF Update 2026?',
       answer:
-        'O evento principal acontece em 03 de outubro de 2026, das 7h30 às 18h45, no Auditório da FAESA, em Vitória/ES.'
+        'O evento principal acontece em 03 de outubro de 2026, das 07h30 às 18h45, no Auditório da FAESA, em Vitória/ES. O pré-evento Workshop de Tecnologias para Dor acontece em 02 de outubro, das 18h30 às 20h30.'
     },
     {
       question: 'O evento é presencial?',
@@ -232,7 +521,7 @@ export const eventContent = {
     {
       question: 'A inscrição no evento inclui o workshop?',
       answer:
-        'Não. O Workshop de Tecnologias para Dor possui inscrição específica, vagas limitadas e valor cobrado à parte.'
+        'Não. O Workshop de Tecnologias para Dor possui inscrição específica, vagas limitadas e é atividade complementar. É necessário estar inscrito no evento principal, mas isso não garante vaga automática no pré-evento.'
     },
     {
       question: 'Como funciona a política de reembolso?',

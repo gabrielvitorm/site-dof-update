@@ -11,6 +11,7 @@ interface CheckoutCaptureModalProps {
   errorMessage?: string | null;
   onChange(field: keyof CheckoutFormState, value: string | boolean): void;
   onClose(): void;
+  onContinueToCheckout(): void;
   onSubmit(event: FormEvent<HTMLFormElement>): void;
 }
 
@@ -23,11 +24,14 @@ export function CheckoutCaptureModal({
   errorMessage,
   onChange,
   onClose,
+  onContinueToCheckout,
   onSubmit
 }: CheckoutCaptureModalProps) {
   if (!isOpen) {
     return null;
   }
+
+  const showFallbackContinue = Boolean(errorMessage);
 
   return (
     <div className="modal-backdrop" data-cta-origin={ctaOrigin ?? undefined}>
@@ -116,6 +120,17 @@ export function CheckoutCaptureModal({
           <button className="button button-primary modal-submit" disabled={isSubmitting} type="submit">
             {isSubmitting ? 'PREPARANDO SUA INSCRIÇÃO...' : 'CONTINUAR PARA INSCRIÇÃO'}
           </button>
+
+          {showFallbackContinue ? (
+            <button
+              className="button button-secondary modal-fallback"
+              disabled={isSubmitting}
+              onClick={onContinueToCheckout}
+              type="button"
+            >
+              Continuar mesmo assim
+            </button>
+          ) : null}
         </form>
       </div>
     </div>
