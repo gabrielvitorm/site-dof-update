@@ -13,10 +13,11 @@ export default [
     languageOptions: {
       parser: tsParser,
       globals: {
-        ...globals.node
+        ...globals.node,
+        ...globals.browser
       },
       parserOptions: {
-        project: true,
+        project: ['./packages/contracts/tsconfig.json', './apps/api/tsconfig.json', './apps/web/tsconfig.json'],
         tsconfigRootDir: import.meta.dirname
       }
     },
