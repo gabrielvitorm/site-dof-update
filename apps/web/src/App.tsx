@@ -57,6 +57,17 @@ export function App() {
     dispatchCheckout({ type: 'open', ctaOrigin, ticket: selectedTicket });
   };
 
+  const scrollToTickets = (ctaOrigin: CtaOrigin) => {
+    analytics.trackCtaClick(ctaOrigin);
+    const offerSection = document.getElementById('offer');
+    if (!offerSection) {
+      return;
+    }
+
+    offerSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    window.history.replaceState(null, '', '#offer');
+  };
+
   const closeCheckoutCapture = () => {
     dispatchCheckout({ type: 'close' });
     window.setTimeout(() => lastTriggerRef.current?.focus(), 0);
@@ -184,7 +195,7 @@ export function App() {
 
   return (
     <main className="landing">
-      <HeroSection onOpenCheckoutCapture={openCheckoutCapture} />
+      <HeroSection onScrollToTickets={scrollToTickets} />
       <section className="section section-light" id="why-participate">
         <SectionIntro
           eyebrow="Por que participar"
@@ -217,9 +228,9 @@ export function App() {
           ))}
         </div>
         <div className="section-action">
-          <CheckoutButton ctaOrigin="audience" onOpen={openCheckoutCapture}>
+          <TicketsAnchorButton ctaOrigin="audience" onNavigate={scrollToTickets}>
             GARANTIR MINHA VAGA
-          </CheckoutButton>
+          </TicketsAnchorButton>
         </div>
       </section>
 
@@ -230,7 +241,7 @@ export function App() {
       <OfferSection analytics={analytics} onOpenCheckoutCapture={openCheckoutCapture} />
       <LocationSection analytics={analytics} />
       <FaqSection />
-      <FinalCtaSection onOpenCheckoutCapture={openCheckoutCapture} />
+      <FinalCtaSection onScrollToTickets={scrollToTickets} />
       <CheckoutCaptureModal
         ctaOrigin={checkoutState.ctaOrigin}
         errorMessage={checkoutState.errorMessage}
@@ -248,9 +259,9 @@ export function App() {
 }
 
 function HeroSection({
-  onOpenCheckoutCapture
+  onScrollToTickets
 }: {
-  onOpenCheckoutCapture: (ctaOrigin: CtaOrigin, trigger: HTMLButtonElement) => void;
+  onScrollToTickets: (ctaOrigin: CtaOrigin) => void;
 }) {
   return (
     <section className="hero" id="hero">
@@ -267,10 +278,10 @@ function HeroSection({
         <span>Profissionais {eventContent.price}</span>
       </div>
         <div className="hero-actions">
-          <CheckoutButton ctaOrigin="hero" onOpen={onOpenCheckoutCapture}>
+          <TicketsAnchorButton ctaOrigin="hero" onNavigate={onScrollToTickets}>
             {eventContent.primaryCta}
-          </CheckoutButton>
-          <span>{eventContent.ctaMicrocopy}</span>
+          </TicketsAnchorButton>
+          <span>Escolha a categoria do ingresso e continue para a inscrição oficial.</span>
           <small>{eventContent.scarcityNote}</small>
         </div>
         <p className="hero-note">
@@ -543,9 +554,9 @@ function FaqSection() {
 }
 
 function FinalCtaSection({
-  onOpenCheckoutCapture
+  onScrollToTickets
 }: {
-  onOpenCheckoutCapture: (ctaOrigin: CtaOrigin, trigger: HTMLButtonElement) => void;
+  onScrollToTickets: (ctaOrigin: CtaOrigin) => void;
 }) {
   return (
     <section className="final-cta" id="final">
@@ -561,31 +572,34 @@ function FinalCtaSection({
         <span>Vitória/ES</span>
         <span>{eventContent.lot} - categorias até 01/10</span>
       </div>
-      <CheckoutButton ctaOrigin="final" onOpen={onOpenCheckoutCapture}>
+      <TicketsAnchorButton ctaOrigin="final" onNavigate={onScrollToTickets}>
         {eventContent.primaryCta}
-      </CheckoutButton>
+      </TicketsAnchorButton>
     </section>
   );
 }
 
-function CheckoutButton({
+function TicketsAnchorButton({
   children,
   ctaOrigin,
-  onOpen
+  onNavigate
 }: {
   children: ReactNode;
   ctaOrigin: CtaOrigin;
-  onOpen: (ctaOrigin: CtaOrigin, trigger: HTMLButtonElement) => void;
+  onNavigate: (ctaOrigin: CtaOrigin) => void;
 }) {
   return (
-    <button
+    <a
       className="button button-primary"
       data-cta-origin={ctaOrigin}
-      onClick={(event) => onOpen(ctaOrigin, event.currentTarget)}
-      type="button"
+      href="#offer"
+      onClick={(event) => {
+        event.preventDefault();
+        onNavigate(ctaOrigin);
+      }}
     >
       {children}
-    </button>
+    </a>
   );
 }
 

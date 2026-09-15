@@ -28,16 +28,17 @@ describe('DOF Update landing page', () => {
     expect(html).toContain('Perguntas frequentes');
   });
 
-  it('renders conversion CTAs that target the shared mini-capture flow', () => {
+  it('anchors general CTAs to the ticket offer section', () => {
     const html = renderToStaticMarkup(<App />);
 
     expect(html).toContain('GARANTIR MINHA VAGA');
-    expect(html).toContain('Você fará um cadastro rápido e seguirá para a inscrição oficial.');
-    expect(html).toContain('Valores por categoria disponíveis até 01/10/2026 ou enquanto houver vagas.');
+    expect(html).toContain('href="#offer"');
+    expect(html).toContain('Escolha a categoria do ingresso e continue para a inscrição oficial.');
     expect(html).toContain('data-cta-origin="hero"');
     expect(html).toContain('data-cta-origin="audience"');
     expect(html).toContain('data-cta-origin="pricing_carousel"');
     expect(html).toContain('data-cta-origin="final"');
+    expect(html).toContain('id="offer"');
   });
 
   it('renders all official ticket categories, group link and refund policy', () => {
