@@ -359,7 +359,7 @@ function SpeakersSection() {
           <article className="speaker-card" key={speaker.name}>
             {speaker.image ? (
               <img
-                alt={speaker.name}
+                alt={`Foto de ${speaker.name}, ${speaker.profession}, palestrante do DOF Update 2026`}
                 className="speaker-avatar speaker-avatar-photo"
                 height={96}
                 loading="lazy"

@@ -42,7 +42,8 @@ Programação principal, 10 palestrantes confirmados (incluindo Nídia Marinho),
 ## D-015 — Carrossel de ingressos com foco em Profissionais
 A dobra de oferta usa carrossel com card inicial “Profissionais”, preview parcial do próximo card, CTA “GARANTIR MINHA VAGA” abrindo minicaptura com `cta_origin = pricing_carousel` e metadados `ticket_type`, `ticket_price`, `ticket_variant`.
 
-## D-018 — Imagens Docker de deploy
+## D-019 — SEO Google + SEO para IA
+Landing usa favicon/logo oficiais, Open Graph, JSON-LD (`Event`/`Organization`/`WebSite`), `robots.txt`, `sitemap.xml`, `llms.txt` e ficha factual `llms.md`. Domínio canônico: `https://dofupdate.com.br`.
 Um `Dockerfile` multi-target na raiz (`api` e `web`). Compose de deploy sobe postgres + api + nginx. **Um único `.env` na raiz** alimenta `docker:build`/`docker:up`, API local (`--env-file=../../.env`) e Vite (`envDir` na raiz).
 
 ## D-017 — Stack local de API + Postgres

@@ -98,6 +98,7 @@ describe('DOF Update landing page', () => {
     expect(html).toContain('Erika Galiza');
     expect(html).toContain('Benedita Barbosa');
     expect(html).toContain('src="/speakers/rai-santiago.webp"');
+    expect(html).toContain('alt="Foto de Raí Santiago, Fonoaudiólogo, palestrante do DOF Update 2026"');
     expect(html).toContain('src="/speakers/gabriela-vendolin.png"');
     expect(html).toContain('src="/speakers/thays-crosara.webp"');
     expect(html).toContain('src="/speakers/juliana-stuginski.webp"');
