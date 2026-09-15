@@ -1,0 +1,67 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: dof-update-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-dofupdate}
+      POSTGRES_USER: ${POSTGRES_USER:-dof_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-dof_local_dev}
+    ports:
+      - '${POSTGRES_PORT:-5432}:5432'
+    volumes:
+      - dof_update_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+      target: api
+    container_name: dof-update-api
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      HOST: 0.0.0.0
+      PORT: 3001
+      APP_BASE_URL: ${APP_BASE_URL:-http://localhost:8080}
+      DATABASE_URL: postgresql://${POSTGRES_USER:-dof_user}:${POSTGRES_PASSWORD:-dof_local_dev}@postgres:5432/${POSTGRES_DB:-dofupdate}
+      EVENT_PRICE_BRL: ${EVENT_PRICE_BRL:-320}
+      SALES_PHASE: "${SALES_PHASE:-Ultimo lote}"
+      EVEN3_CHECKOUT_URL: "${EVEN3_CHECKOUT_URL}"
+      EVEN3_FALLBACK_URL: "${EVEN3_FALLBACK_URL}"
+      GROUP_FORM_URL: "${GROUP_FORM_URL}"
+      MAPS_URL: "${MAPS_URL}"
+      SALES_ENABLED: "${SALES_ENABLED:-true}"
+      EVEN3_WEBHOOK_PATH_SECRET: "${EVEN3_WEBHOOK_PATH_SECRET}"
+      LEAD_RATE_LIMIT_MAX: "${LEAD_RATE_LIMIT_MAX:-20}"
+      LEAD_RATE_LIMIT_WINDOW_MS: "${LEAD_RATE_LIMIT_WINDOW_MS:-60000}"
+      N8N_INTERNAL_WEBHOOK_URL: "${N8N_INTERNAL_WEBHOOK_URL}"
+      N8N_INTERNAL_TOKEN: "${N8N_INTERNAL_TOKEN}"
+      LOG_LEVEL: "${LOG_LEVEL:-info}"
+      PII_LOG_MASKING: "${PII_LOG_MASKING:-true}"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  web:
+    build:
+      context: ..
+      dockerfile: Dockerfile
+      target: web
+      args:
+        VITE_GA4_MEASUREMENT_ID: ${VITE_GA4_MEASUREMENT_ID:-}
+        VITE_META_PIXEL_ID: ${VITE_META_PIXEL_ID:-}
+    container_name: dof-update-web
+    restart: unless-stopped
+    ports:
+      - '${HTTP_PORT:-8080}:80'
+    depends_on:
+      - api
+
+volumes:
+  dof_update_pgdata:

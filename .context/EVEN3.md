@@ -1,5 +1,13 @@
 # Even3
 
+## Deploy (Docker)
+1. Copiar `.env.example` → `.env` e preencher segredos
+2. `npm run docker:build` — builda targets `api` e `web` do `Dockerfile` na raiz
+3. `npm run docker:up` — sobe postgres + api + nginx/web em `:8080`
+4. Smoke: `curl -sS http://127.0.0.1:8080/health` e abrir a landing
+
+TLS/Let’s Encrypt fica no VPS (Nginx externo ou extensão do compose). Compose de deploy usa HTTP `:80` no container web.
+
 ## Dev local
 1. `npm run db:up` — Postgres Docker em `127.0.0.1:5432`
 2. Copiar `apps/api/.env.example` → `apps/api/.env` (já versionado o exemplo)

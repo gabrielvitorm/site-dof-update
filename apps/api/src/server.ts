@@ -10,7 +10,7 @@ export async function startServer(): Promise<void> {
   const config = loadConfig();
   const pool = createDatabasePool(config.databaseUrl);
 
-  const applied = await runMigrations(pool);
+  const applied = await runMigrations(pool, new URL('./db/migrations/', import.meta.url));
   if (applied.length > 0) {
     console.log(`[${getApiServiceName()}] applied migrations: ${applied.join(', ')}`);
   }
@@ -18,11 +18,16 @@ export async function startServer(): Promise<void> {
   const app = buildApp({ config, db: pool });
 
   await app.listen({
-    host: '127.0.0.1',
+    host: resolveListenHost(process.env.HOST),
     port: config.port
   });
 
-  console.log(`[${getApiServiceName()}] listening on http://127.0.0.1:${config.port}`);
+  console.log(`[${getApiServiceName()}] listening on http://${resolveListenHost(process.env.HOST)}:${config.port}`);
+}
+
+export function resolveListenHost(host: string | undefined): string {
+  const value = host?.trim();
+  return value && value.length > 0 ? value : '127.0.0.1';
 }
 
 function isExecutedDirectly(): boolean {
