@@ -43,7 +43,7 @@ Programação principal, 10 palestrantes confirmados (incluindo Nídia Marinho),
 A dobra de oferta usa carrossel com card inicial “Profissionais”, preview parcial do próximo card, CTA “GARANTIR MINHA VAGA” abrindo minicaptura com `cta_origin = pricing_carousel` e metadados `ticket_type`, `ticket_price`, `ticket_variant`.
 
 ## D-018 — Imagens Docker de deploy
-Um `Dockerfile` multi-target na raiz do monorepo (`api` e `web`). Compose de deploy (`infra/docker-compose.deploy.yml`) sobe postgres + api + nginx estático com proxy `/api` e `/webhooks`. Env de exemplo em `.env.example`. Validar com `npm run docker:build`.
+Um `Dockerfile` multi-target na raiz (`api` e `web`). Compose de deploy sobe postgres + api + nginx. **Um único `.env` na raiz** alimenta `docker:build`/`docker:up`, API local (`--env-file=../../.env`) e Vite (`envDir` na raiz).
 
 ## D-017 — Stack local de API + Postgres
 Dev local usa Docker Compose (`infra/docker-compose.yml`) para Postgres, Fastify em `:3001` (`npm run dev:api`) e Vite com proxy `/api` → API. Migrations rodam no boot da API e via `npm run db:migrate`.

@@ -11,8 +11,8 @@
     "build:migrations": "mkdir -p dist/db/migrations && cp src/db/migrations/*.sql dist/db/migrations/",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
-    "dev": "tsx --env-file=.env src/server.ts",
-    "migrate": "tsx --env-file=.env src/db/run-migrate.ts",
+    "dev": "tsx --env-file=../../.env src/server.ts",
+    "migrate": "tsx --env-file=../../.env src/db/run-migrate.ts",
     "start": "node dist/server.js"
   },
   "dependencies": {

@@ -7,6 +7,7 @@ const rootDir = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
   plugins: [react()],
+  envDir: path.resolve(rootDir, '../..'),
   resolve: {
     alias: {
       '@dof-update/contracts': path.resolve(rootDir, '../../packages/contracts/src/index.ts')

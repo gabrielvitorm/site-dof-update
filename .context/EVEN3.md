@@ -1,19 +1,19 @@
 # Even3
 
 ## Deploy (Docker)
-1. Copiar `.env.example` → `.env` e preencher segredos
-2. `npm run docker:build` — builda targets `api` e `web` do `Dockerfile` na raiz
+1. Copiar `.env.example` → `.env` na raiz e preencher segredos
+2. `npm run docker:build` — builda targets `api` e `web` (usa `.env`, inclusive `VITE_*`)
 3. `npm run docker:up` — sobe postgres + api + nginx/web em `:8080`
 4. Smoke: `curl -sS http://127.0.0.1:8080/health` e abrir a landing
 
 TLS/Let’s Encrypt fica no VPS (Nginx externo ou extensão do compose). Compose de deploy usa HTTP `:80` no container web.
 
 ## Dev local
-1. `npm run db:up` — Postgres Docker em `127.0.0.1:5432`
-2. Copiar `apps/api/.env.example` → `apps/api/.env` (já versionado o exemplo)
-3. `npm run db:migrate` ou subir a API (ela migra sozinha)
+1. Copiar `.env.example` → `.env` na raiz (mesmo arquivo do deploy)
+2. `npm run db:up` — Postgres em `127.0.0.1:5432`
+3. `npm run db:migrate` ou `npm run dev:api` (migra no boot)
 4. `npm run dev:api` — Fastify em `http://127.0.0.1:3001`
-5. `npm run dev` — Vite com proxy `/api` → API
+5. `npm run dev` — Vite (lê `VITE_*` do `.env` na raiz) com proxy `/api` → API
 
 ## Papel
 Checkout oficial e sistema de inscrição. A aplicação própria não manipula pagamento.
