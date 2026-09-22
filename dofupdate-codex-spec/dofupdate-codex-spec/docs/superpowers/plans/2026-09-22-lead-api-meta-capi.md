@@ -72,7 +72,7 @@
 ### Task 2: Make lead persistence atomic and explicitly DTO-to-entity
 
 **Files:**
-- Modify: `apps/api/src/db/migrations/001_initial.sql`
+- Create: `apps/api/src/db/migrations/002_lead_uniqueness.sql`
 - Modify: `apps/api/src/modules/leads/lead-repository.ts`
 - Modify: `apps/api/src/modules/leads/lead-service.ts`
 - Test: `apps/api/src/modules/leads/lead-repository.test.ts`
@@ -94,7 +94,7 @@
 
 - [ ] **Step 3: Implement the minimal persistence changes**
 
-  Add safe unique indexes for normalized email and non-null E.164 phone, map only the DTO fields into `CapturedLeadInput`, carry the event id into the capture event payload, and preserve the existing purchased-status protection. Keep raw PII out of event payloads.
+  Add a forward-only migration with safe unique indexes for normalized email and non-null E.164 phone, map only the DTO fields into `CapturedLeadInput`, carry the event id into the capture event payload, and preserve the existing purchased-status protection. Keep raw PII out of event payloads.
 
 - [ ] **Step 4: Run the focused tests and verify GREEN**
 
@@ -102,7 +102,7 @@
 
 - [ ] **Step 5: Commit**
 
-  Run `git add apps/api/src/db/migrations/001_initial.sql apps/api/src/modules/leads/lead-repository.ts apps/api/src/modules/leads/lead-service.ts apps/api/src/modules/leads/lead-repository.test.ts apps/api/src/modules/leads/lead-routes.test.ts && git commit -m "feat: harden lead persistence contract"`.
+  Run `git add apps/api/src/db/migrations/002_lead_uniqueness.sql apps/api/src/db/migrate.test.ts apps/api/src/db/test-database.ts apps/api/src/modules/leads/lead-repository.ts apps/api/src/modules/leads/lead-service.ts apps/api/src/modules/leads/lead-repository.test.ts apps/api/src/modules/leads/lead-routes.test.ts apps/api/src/modules/automation/automation-service.test.ts && git commit -m "feat: harden lead persistence contract"`.
 
 ### Task 3: Add non-blocking Meta Conversions API client
 

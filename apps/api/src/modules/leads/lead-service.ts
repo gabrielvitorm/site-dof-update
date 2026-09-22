@@ -1,6 +1,7 @@
 import { leadCaptureRequestSchema, type LeadCaptureResponse } from '@dof-update/contracts';
 
 import type { AppConfig } from '../../config';
+import { randomUUID } from 'node:crypto';
 import type { Queryable } from '../../db/client';
 import { LeadRepository } from './lead-repository';
 import { normalizeBrazilianPhoneToE164, normalizeEmail } from './normalization';
@@ -22,7 +23,9 @@ export class LeadCaptureService {
 
   public async capture(rawPayload: unknown): Promise<LeadCaptureResponse> {
     const payload = leadCaptureRequestSchema.parse(rawPayload);
+    const eventId = payload.eventId ?? randomUUID();
     const lead = await this.repository.upsertCapturedLead({
+      eventId,
       name: payload.name,
       email: payload.email,
       emailNormalized: normalizeEmail(payload.email),
@@ -34,6 +37,7 @@ export class LeadCaptureService {
     });
 
     return {
+      eventId,
       leadId: lead.id,
       status: lead.status,
       checkoutUrl: this.config.publicConfig.checkoutUrl,
@@ -41,4 +45,3 @@ export class LeadCaptureService {
     };
   }
 }
-

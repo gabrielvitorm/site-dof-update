@@ -18,6 +18,7 @@ export interface LeadAttributionRecord {
 }
 
 export interface CapturedLeadInput {
+  eventId: string;
   name: string;
   email: string;
   emailNormalized: string;
@@ -86,6 +87,7 @@ export class LeadRepository {
       type: 'LEAD_CAPTURED',
       source: 'lead_api',
       payload: {
+        eventId: input.eventId,
         emailNormalized: input.emailNormalized,
         ctaOrigin: input.attribution.ctaOrigin,
         sessionId: input.attribution.sessionId

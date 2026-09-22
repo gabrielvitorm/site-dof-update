@@ -5,6 +5,7 @@ import { LeadRepository } from '../leads/lead-repository';
 import { AutomationService } from './automation-service';
 
 const leadInput = {
+  eventId: '11111111-1111-4111-8111-111111111111',
   name: 'Maria Silva',
   email: 'maria@example.com',
   emailNormalized: 'maria@example.com',
@@ -110,4 +111,3 @@ describe('AutomationService', () => {
     expect(pending).toHaveLength(0);
   });
 });
-

@@ -4,6 +4,7 @@ import { createTestDatabase } from '../../db/test-database';
 import { LeadRepository } from './lead-repository';
 
 const baseLead = {
+  eventId: '11111111-1111-4111-8111-111111111111',
   name: 'Maria Silva',
   email: 'maria@example.com',
   emailNormalized: 'maria@example.com',
@@ -54,6 +55,9 @@ describe('LeadRepository', () => {
       'LEAD_CAPTURED',
       'LEAD_CAPTURED'
     ]);
+    expect(events[0]?.payload).toMatchObject({
+      eventId: '11111111-1111-4111-8111-111111111111'
+    });
   });
 
   it('matches by normalized phone when email does not exist', async () => {
@@ -71,4 +75,3 @@ describe('LeadRepository', () => {
     expect(second.emailNormalized).toBe('outro@example.com');
   });
 });
-

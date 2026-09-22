@@ -1,8 +1,8 @@
-import { readFileSync } from 'node:fs';
 import { randomUUID } from 'node:crypto';
 import { DataType, newDb } from 'pg-mem';
 
 import type { Queryable } from './client';
+import { runMigrations } from './migrate';
 
 export async function createTestDatabase(): Promise<Queryable> {
   const db = newDb();
@@ -13,12 +13,8 @@ export async function createTestDatabase(): Promise<Queryable> {
     impure: true
   });
 
-  const migrationSql = readFileSync(
-    new URL('./migrations/001_initial.sql', import.meta.url),
-    'utf8'
-  );
   const { Pool } = db.adapters.createPg();
   const pool = new Pool();
-  await pool.query(migrationSql);
+  await runMigrations(pool);
   return pool;
 }

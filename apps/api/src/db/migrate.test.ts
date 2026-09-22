@@ -5,7 +5,7 @@ import { listMigrationFiles, parseAppliedMigrations, schemaMigrationsDdl } from 
 describe('database migrations', () => {
   it('lists SQL migrations in lexical order', () => {
     const files = listMigrationFiles(new URL('./migrations', import.meta.url));
-    expect(files.map((file) => file.name)).toEqual(['001_initial.sql']);
+    expect(files.map((file) => file.name)).toEqual(['001_initial.sql', '002_lead_uniqueness.sql']);
   });
 
   it('parses already-applied migration names from query rows', () => {

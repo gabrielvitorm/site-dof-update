@@ -6,6 +6,7 @@ import { createTestDatabase } from '../../db/test-database';
 import { LeadRepository } from './lead-repository';
 
 const validRequest = {
+  eventId: '11111111-1111-4111-8111-111111111111',
   name: '  Maria Silva  ',
   email: '  MARIA@EXAMPLE.COM  ',
   phone: '(27) 99999-9999',
@@ -40,11 +41,15 @@ describe('POST /api/leads', () => {
 
     expect(response.statusCode).toBe(201);
     expect(body).toMatchObject({
+      eventId: validRequest.eventId,
       status: 'CAPTURED',
       checkoutUrl: 'https://www.even3.com.br/checkout',
       redirectAllowed: true
     });
     expect(body.leadId).toEqual(expect.any(String));
+    expect(body).not.toHaveProperty('email');
+    expect(body).not.toHaveProperty('phone');
+    expect(body).not.toHaveProperty('attribution');
 
     const events = await new LeadRepository(db).listEvents(body.leadId);
     expect(events).toHaveLength(1);
