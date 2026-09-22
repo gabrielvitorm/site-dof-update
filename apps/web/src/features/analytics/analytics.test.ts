@@ -276,6 +276,7 @@ describe('analytics facade', () => {
     analytics.trackCtaClick('hero');
     analytics.trackLead({
       leadId: 'lead-123',
+      eventId: '11111111-1111-4111-8111-111111111111',
       attribution: createAttribution()
     });
     analytics.trackBeginCheckout({

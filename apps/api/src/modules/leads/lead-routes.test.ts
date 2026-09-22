@@ -4,6 +4,7 @@ import { buildApp } from '../../app';
 import { loadConfig } from '../../config';
 import { createTestDatabase } from '../../db/test-database';
 import { LeadRepository } from './lead-repository';
+import type { MetaConversionsClient } from '../meta/meta-conversions-client';
 
 const validRequest = {
   eventId: '11111111-1111-4111-8111-111111111111',
@@ -28,6 +29,25 @@ const validRequest = {
 };
 
 describe('POST /api/leads', () => {
+  it('returns 201 when Meta tracking fails after persistence', async () => {
+    const db = await createTestDatabase();
+    const metaClient: MetaConversionsClient = {
+      sendLead: async () => {
+        throw new Error('meta offline');
+      }
+    };
+    const app = buildApp({ config: loadConfig(testEnv()), db, metaClient });
+
+    const response = await app.inject({
+      method: 'POST',
+      url: '/api/leads',
+      payload: validRequest
+    });
+
+    expect(response.statusCode).toBe(201);
+    expect((await db.query('select count(*) from leads')).rows[0]).toBeDefined();
+  });
+
   it('validates, normalizes and persists a captured lead before returning checkout', async () => {
     const db = await createTestDatabase();
     const app = buildApp({ config: loadConfig(testEnv()), db });

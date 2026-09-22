@@ -1,8 +1,9 @@
 import { leadCaptureRequestSchema, type LeadCaptureResponse } from '@dof-update/contracts';
 
 import type { AppConfig } from '../../config';
-import { randomUUID } from 'node:crypto';
 import type { Queryable } from '../../db/client';
+import { randomUUID } from 'node:crypto';
+import type { MetaConversionsClient } from '../meta/meta-conversions-client';
 import { LeadRepository } from './lead-repository';
 import { normalizeBrazilianPhoneToE164, normalizeEmail } from './normalization';
 
@@ -11,17 +12,26 @@ export interface LeadValidationError {
   fields: Record<string, string>;
 }
 
+export interface LeadCaptureContext {
+  clientIpAddress?: string;
+  clientUserAgent?: string;
+}
+
 export class LeadCaptureService {
   private readonly repository: LeadRepository;
 
   public constructor(
     private readonly config: AppConfig,
-    db: Queryable
+    db: Queryable,
+    private readonly metaClient: MetaConversionsClient
   ) {
     this.repository = new LeadRepository(db);
   }
 
-  public async capture(rawPayload: unknown): Promise<LeadCaptureResponse> {
+  public async capture(
+    rawPayload: unknown,
+    context: LeadCaptureContext = {}
+  ): Promise<LeadCaptureResponse> {
     const payload = leadCaptureRequestSchema.parse(rawPayload);
     const eventId = payload.eventId ?? randomUUID();
     const lead = await this.repository.upsertCapturedLead({
@@ -35,6 +45,21 @@ export class LeadCaptureService {
       checkoutUrl: this.config.publicConfig.checkoutUrl,
       attribution: payload.attribution
     });
+
+    try {
+      await this.metaClient.sendLead({
+        eventId,
+        eventSourceUrl: payload.attribution.landingUrl,
+        email: payload.email,
+        phoneE164: normalizeBrazilianPhoneToE164(payload.phone),
+        fbp: payload.meta?.fbp ?? null,
+        fbc: payload.meta?.fbc ?? null,
+        clientIpAddress: context.clientIpAddress,
+        clientUserAgent: context.clientUserAgent
+      });
+    } catch {
+      console.error('Meta CAPI lead dispatch failed after lead persistence.');
+    }
 
     return {
       eventId,

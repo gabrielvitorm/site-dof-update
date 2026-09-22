@@ -13,6 +13,13 @@ export interface AppConfig {
   leadRateLimitWindowMs: number;
   logLevel: string;
   piiLogMasking: boolean;
+  metaCapi: {
+    enabled: boolean;
+    pixelId: string | null;
+    accessToken: string | null;
+    apiVersion: string;
+    timeoutMs: number;
+  };
 }
 
 type EnvMap = Record<string, string | undefined>;
@@ -40,7 +47,26 @@ export function loadConfig(env: EnvMap = process.env): AppConfig {
     leadRateLimitMax: readOptionalInt(env, 'LEAD_RATE_LIMIT_MAX', 20),
     leadRateLimitWindowMs: readOptionalInt(env, 'LEAD_RATE_LIMIT_WINDOW_MS', 60_000),
     logLevel: env.LOG_LEVEL ?? 'info',
-    piiLogMasking: readBoolean(env, 'PII_LOG_MASKING')
+    piiLogMasking: readBoolean(env, 'PII_LOG_MASKING'),
+    metaCapi: loadMetaCapiConfig(env)
+  };
+}
+
+function loadMetaCapiConfig(env: EnvMap): AppConfig['metaCapi'] {
+  const enabled = readOptionalBoolean(env, 'META_CAPI_ENABLED', false);
+  const pixelId = readOptionalString(env, 'META_PIXEL_ID');
+  const accessToken = readOptionalString(env, 'META_CAPI_ACCESS_TOKEN');
+
+  if (enabled && (!pixelId || !accessToken)) {
+    throw new Error('META_PIXEL_ID and META_CAPI_ACCESS_TOKEN are required when Meta CAPI is enabled.');
+  }
+
+  return {
+    enabled,
+    pixelId,
+    accessToken,
+    apiVersion: readOptionalString(env, 'META_CAPI_API_VERSION') ?? 'v20.0',
+    timeoutMs: readOptionalInt(env, 'META_CAPI_TIMEOUT_MS', 1500)
   };
 }
 
@@ -70,6 +96,25 @@ function readOptionalInt(env: EnvMap, name: string, fallback: number): number {
     throw new Error(`Environment variable ${name} must be a positive integer.`);
   }
   return value;
+}
+
+function readOptionalString(env: EnvMap, name: string): string | null {
+  const value = env[name]?.trim();
+  return value ? value : null;
+}
+
+function readOptionalBoolean(env: EnvMap, name: string, fallback: boolean): boolean {
+  const value = env[name]?.trim().toLowerCase();
+  if (!value) {
+    return fallback;
+  }
+  if (value === 'true') {
+    return true;
+  }
+  if (value === 'false') {
+    return false;
+  }
+  throw new Error(`Environment variable ${name} must be true or false.`);
 }
 
 function readBoolean(env: EnvMap, name: string): boolean {

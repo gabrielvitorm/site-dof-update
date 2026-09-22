@@ -3,14 +3,16 @@ import type { FastifyInstance } from 'fastify';
 
 import type { AppConfig } from '../../config';
 import type { Queryable } from '../../db/client';
+import type { MetaConversionsClient } from '../meta/meta-conversions-client';
 import { LeadCaptureService } from './lead-service';
 
 export function registerLeadRoutes(
   app: FastifyInstance,
   config: AppConfig,
-  db: Queryable
+  db: Queryable,
+  metaClient: MetaConversionsClient
 ): void {
-  const service = new LeadCaptureService(config, db);
+  const service = new LeadCaptureService(config, db, metaClient);
   const rateLimiter = createInMemoryRateLimiter(
     config.leadRateLimitMax,
     config.leadRateLimitWindowMs
@@ -24,7 +26,10 @@ export function registerLeadRoutes(
     }
 
     try {
-      const response = await service.capture(request.body);
+      const response = await service.capture(request.body, {
+        clientIpAddress: request.ip,
+        clientUserAgent: request.headers['user-agent']
+      });
       const statusCode = response.status === 'CAPTURED' ? 201 : 200;
       return reply.code(statusCode).send(response);
     } catch (error) {
