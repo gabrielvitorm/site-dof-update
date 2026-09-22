@@ -17,17 +17,22 @@ services:
       timeout: 5s
       retries: 10
 
-  api:
+  app:
     build:
       context: ..
       dockerfile: Dockerfile
-      target: api
-    container_name: dof-update-api
+      target: fullstack
+      args:
+        VITE_GA4_MEASUREMENT_ID: ${VITE_GA4_MEASUREMENT_ID:-}
+        VITE_META_PIXEL_ID: ${VITE_META_PIXEL_ID:-}
+        VITE_SITE_URL: ${VITE_SITE_URL:-https://dofupdate.com.br}
+    container_name: dof-update-app
     restart: unless-stopped
     environment:
       NODE_ENV: production
       HOST: 0.0.0.0
       PORT: 3001
+      WEB_ROOT: /app/apps/api/dist/web
       APP_BASE_URL: ${APP_BASE_URL:-http://localhost:8080}
       DATABASE_URL: postgresql://${POSTGRES_USER:-dof_user}:${POSTGRES_PASSWORD:-dof_local_dev}@postgres:5432/${POSTGRES_DB:-dofupdate}
       EVENT_PRICE_BRL: ${EVENT_PRICE_BRL:-320}
@@ -53,21 +58,11 @@ services:
       postgres:
         condition: service_healthy
 
-  web:
-    build:
-      context: ..
-      dockerfile: Dockerfile
-      target: web
-      args:
-        VITE_GA4_MEASUREMENT_ID: ${VITE_GA4_MEASUREMENT_ID:-}
-        VITE_META_PIXEL_ID: ${VITE_META_PIXEL_ID:-}
-        VITE_SITE_URL: ${VITE_SITE_URL:-https://dofupdate.com.br}
-    container_name: dof-update-web
-    restart: unless-stopped
     ports:
-      - '${HTTP_PORT:-8080}:80'
+      - '${HTTP_PORT:-8080}:3001'
     depends_on:
-      - api
+      postgres:
+        condition: service_healthy
 
 volumes:
   dof_update_pgdata:

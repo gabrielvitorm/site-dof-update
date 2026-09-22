@@ -39,7 +39,7 @@ export function loadConfig(env: EnvMap = process.env): AppConfig {
     nodeEnv: env.NODE_ENV ?? 'development',
     appBaseUrl: readRequired(env, 'APP_BASE_URL'),
     port: readInt(env, 'PORT'),
-    databaseUrl: readRequired(env, 'DATABASE_URL'),
+    databaseUrl: readDatabaseUrl(env),
     publicConfig,
     even3WebhookPathSecret: readRequired(env, 'EVEN3_WEBHOOK_PATH_SECRET'),
     n8nInternalWebhookUrl: readRequired(env, 'N8N_INTERNAL_WEBHOOK_URL'),
@@ -76,6 +76,25 @@ function readRequired(env: EnvMap, name: string): string {
     throw new Error(`Missing required environment variable: ${name}`);
   }
   return value;
+}
+
+function readDatabaseUrl(env: EnvMap): string {
+  const explicit = readOptionalString(env, 'DATABASE_URL');
+  if (explicit) {
+    return explicit;
+  }
+
+  const host = readOptionalString(env, 'POSTGRES_HOST') ?? 'dofupdate-db';
+  const port = readOptionalString(env, 'POSTGRES_PORT');
+  const database = readOptionalString(env, 'POSTGRES_DB');
+  const user = readOptionalString(env, 'POSTGRES_USER');
+  const password = readOptionalString(env, 'POSTGRES_PASSWORD');
+
+  if (!host || !port || !database || !user || !password) {
+    throw new Error('DATABASE_URL or complete POSTGRES_* connection variables are required.');
+  }
+
+  return `postgresql://${encodeURIComponent(user)}:${encodeURIComponent(password)}@${host}:${port}/${encodeURIComponent(database)}`;
 }
 
 function readInt(env: EnvMap, name: string): number {

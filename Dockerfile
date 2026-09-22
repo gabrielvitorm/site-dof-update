@@ -65,3 +65,8 @@ FROM nginx:1.27-alpine AS web
 COPY infra/nginx/default.conf /etc/nginx/conf.d/default.conf
 COPY --from=web-build /app/apps/web/dist /usr/share/nginx/html
 EXPOSE 80
+
+FROM api AS fullstack
+ENV WEB_ROOT=/app/apps/api/dist/web
+COPY --from=web-build /app/apps/web/dist /app/apps/api/dist/web
+EXPOSE 3001

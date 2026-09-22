@@ -12,6 +12,22 @@ describe('API configuration', () => {
     expect(config.metaCapi.enabled).toBe(false);
     expect(config.metaCapi.accessToken).toBeNull();
   });
+
+  it('builds the database URL from PostgreSQL service variables when needed', () => {
+    const { DATABASE_URL: _databaseUrl, ...envWithoutUrl } = baseEnv();
+    const config = loadConfig({
+      ...envWithoutUrl,
+      POSTGRES_HOST: 'dofupdate-db',
+      POSTGRES_PORT: '5432',
+      POSTGRES_DB: 'dofupdate-db',
+      POSTGRES_USER: 'postgres',
+      POSTGRES_PASSWORD: 'password-with@symbol'
+    });
+
+    expect(config.databaseUrl).toBe(
+      'postgresql://postgres:password-with%40symbol@dofupdate-db:5432/dofupdate-db'
+    );
+  });
 });
 
 function baseEnv(): Record<string, string> {

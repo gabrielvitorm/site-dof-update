@@ -5,6 +5,7 @@ import { loadConfig } from './config';
 import { createDatabasePool } from './db/client';
 import { runMigrations } from './db/migrate';
 import { getApiServiceName } from './index';
+import { registerWebStatic } from './web/static';
 
 export async function startServer(): Promise<void> {
   const config = loadConfig();
@@ -16,6 +17,10 @@ export async function startServer(): Promise<void> {
   }
 
   const app = buildApp({ config, db: pool });
+  const webRoot = process.env.WEB_ROOT?.trim();
+  if (webRoot) {
+    await registerWebStatic(app, webRoot);
+  }
 
   await app.listen({
     host: resolveListenHost(process.env.HOST),
