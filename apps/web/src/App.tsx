@@ -3,7 +3,7 @@ import type { CtaOrigin, LeadCaptureResponse } from '@dof-update/contracts';
 import { eventContent, type TicketCategory } from './content/event';
 import { createAnalytics, type Analytics } from './features/analytics/analytics';
 import { readTrackingEnv } from './features/analytics/providers';
-import { getAttributionSnapshot } from './features/attribution/attribution';
+import { getAttributionSnapshot, getMetaBrowserTracking } from './features/attribution/attribution';
 import { CheckoutCaptureModal } from './features/checkout/CheckoutCaptureModal';
 import {
   checkoutReducer,
@@ -141,16 +141,19 @@ export function App() {
 
     try {
       const attribution = getAttributionSnapshot(checkoutState.ctaOrigin);
+      const eventId = globalThis.crypto.randomUUID();
       const response = await fetch('/api/leads', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
+          eventId,
           name: checkoutState.form.name,
           phone: checkoutState.form.phone,
           email: checkoutState.form.email,
           consent: checkoutState.form.consent,
+          meta: getMetaBrowserTracking(),
           attribution
         })
       });
@@ -162,7 +165,7 @@ export function App() {
       const result = (await response.json()) as LeadCaptureResponse;
       const checkoutPrice = checkoutState.selectedTicket?.priceValue ?? 320;
 
-      analytics.trackLead({ leadId: result.leadId, attribution });
+      analytics.trackLead({ leadId: result.leadId, eventId: result.eventId, attribution });
       analytics.trackBeginCheckout({
         leadId: result.leadId,
         price: checkoutPrice,

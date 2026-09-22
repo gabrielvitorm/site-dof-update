@@ -62,6 +62,22 @@ export function getAttributionSnapshot(
   };
 }
 
+export function getMetaBrowserTracking(): { fbp: string | null; fbc: string | null } {
+  const cookies = globalThis.document?.cookie ?? '';
+  const values = new Map(
+    cookies
+      .split(';')
+      .map((cookie) => cookie.trim().split('='))
+      .filter(([name, value]) => name && value)
+      .map(([name, value]) => [name, decodeURIComponent(value ?? '')])
+  );
+
+  return {
+    fbp: values.get('_fbp') ?? null,
+    fbc: values.get('_fbc') ?? null
+  };
+}
+
 export function getStoredAttributionTouches(storage: {
   localStorage: StorageLike;
   sessionStorage: StorageLike;

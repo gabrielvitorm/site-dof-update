@@ -31,14 +31,14 @@ function createRecordingAdapters(): {
   return {
     ga4Events,
     metaEvents,
-    ga4: {
+      ga4: {
       event: (name, params) => {
         ga4Events.push({ name, params });
       }
     },
     meta: {
-      track: (name, params) => {
-        metaEvents.push({ name, params, custom: false });
+      track: (name, params, options) => {
+        metaEvents.push({ name, params: { ...params, ...options }, custom: false });
       },
       trackCustom: (name, params) => {
         metaEvents.push({ name, params, custom: true });
@@ -104,6 +104,7 @@ describe('analytics facade', () => {
     analytics.trackLeadFormSubmit('offer');
     analytics.trackLead({
       leadId: 'lead-123',
+      eventId: '11111111-1111-4111-8111-111111111111',
       attribution: createAttribution()
     });
     analytics.trackBeginCheckout({
@@ -177,13 +178,14 @@ describe('analytics facade', () => {
         custom: true
       },
       {
-        name: 'Lead',
+      name: 'Lead',
         params: {
           lead_id: 'lead-123',
           content_name: 'DOF Update 2026',
           utm_source: 'meta',
           utm_medium: 'cpc',
-          utm_campaign: 'lancamento'
+          utm_campaign: 'lancamento',
+          eventID: '11111111-1111-4111-8111-111111111111'
         },
         custom: false
       },

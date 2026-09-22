@@ -44,7 +44,7 @@
 - Test: `apps/web/src/App.test.tsx`
 
 **Interfaces:**
-- Produces `LeadCaptureRequest.eventId: string` as a UUID and optional `meta.fbp`/`meta.fbc` bounded strings.
+- Produces `LeadCaptureRequest.eventId?: string` as a UUID (the API generates one when omitted) and optional `meta.fbp`/`meta.fbc` bounded strings.
 - Produces `LeadCaptureResponse.eventId: string`.
 - Produces `Analytics.trackLead({ leadId, eventId, attribution })` and passes `eventID` to the browser Meta Pixel call.
 

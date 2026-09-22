@@ -5,7 +5,7 @@ export interface Ga4Adapter {
 }
 
 export interface MetaAdapter {
-  track(name: string, params: Record<string, unknown>): void;
+  track(name: string, params: Record<string, unknown>, options?: Record<string, unknown>): void;
   trackCustom(name: string, params: Record<string, unknown>): void;
 }
 
@@ -18,6 +18,7 @@ export interface AnalyticsConfig {
 
 export interface LeadTrackingInput {
   leadId: string;
+  eventId: string;
   attribution: Attribution;
 }
 
@@ -113,16 +114,21 @@ export function createAnalytics(config: AnalyticsConfig = {}): Analytics {
     trackLead(input) {
       ga4?.event('generate_lead', {
         lead_id: input.leadId,
+        event_id: input.eventId,
         ...toAttributionParams(input.attribution),
         cta_origin: input.attribution.ctaOrigin
       });
-      meta?.track('Lead', {
-        lead_id: input.leadId,
-        content_name: 'DOF Update 2026',
-        utm_source: input.attribution.utmSource,
-        utm_medium: input.attribution.utmMedium,
-        utm_campaign: input.attribution.utmCampaign
-      });
+      meta?.track(
+        'Lead',
+        {
+          lead_id: input.leadId,
+          content_name: 'DOF Update 2026',
+          utm_source: input.attribution.utmSource,
+          utm_medium: input.attribution.utmMedium,
+          utm_campaign: input.attribution.utmCampaign
+        },
+        { eventID: input.eventId }
+      );
     },
 
     trackBeginCheckout(input) {
@@ -197,8 +203,8 @@ function createBrowserMetaAdapter(): MetaAdapter {
     (globalThis as { fbq?: (...args: unknown[]) => void }).fbq;
 
   return {
-    track(name, params) {
-      getFbq()?.('track', name, params);
+    track(name, params, options) {
+      getFbq()?.('track', name, params, options);
     },
     trackCustom(name, params) {
       getFbq()?.('trackCustom', name, params);

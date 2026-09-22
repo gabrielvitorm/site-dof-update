@@ -30,6 +30,11 @@ export const leadStatusSchema = z.enum([
 
 export const deviceClassSchema = z.enum(['mobile', 'tablet', 'desktop']);
 
+const metaBrowserTrackingSchema = z.object({
+  fbp: nullableTrackingString,
+  fbc: nullableTrackingString
+});
+
 export const attributionSchema = z.object({
   utmSource: nullableTrackingString,
   utmMedium: nullableTrackingString,
@@ -46,6 +51,7 @@ export const attributionSchema = z.object({
 });
 
 export const leadCaptureRequestSchema = z.object({
+  eventId: z.string().uuid().optional(),
   name: z.string().trim().min(2).max(100),
   email: z.string().trim().toLowerCase().email(),
   phone: z
@@ -56,10 +62,12 @@ export const leadCaptureRequestSchema = z.object({
       return digitCount >= 8 && digitCount <= 20;
     }, 'Phone must contain 8 to 20 digits.'),
   consent: z.literal(true),
+  meta: metaBrowserTrackingSchema.optional(),
   attribution: attributionSchema
 });
 
 export const leadCaptureResponseSchema = z.object({
+  eventId: z.string().uuid(),
   leadId: z.string().uuid(),
   status: leadStatusSchema,
   checkoutUrl: z.string().url(),
@@ -72,4 +80,3 @@ export type DeviceClass = z.infer<typeof deviceClassSchema>;
 export type Attribution = z.infer<typeof attributionSchema>;
 export type LeadCaptureRequest = z.infer<typeof leadCaptureRequestSchema>;
 export type LeadCaptureResponse = z.infer<typeof leadCaptureResponseSchema>;
-

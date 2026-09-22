@@ -25,6 +25,7 @@ const validAttribution = {
 describe('lead contracts', () => {
   it('accepts a valid lead capture request and normalizes email/name whitespace', () => {
     const result = leadCaptureRequestSchema.safeParse({
+      eventId: '11111111-1111-4111-8111-111111111111',
       name: '  Maria Silva  ',
       email: '  MARIA@EXAMPLE.COM  ',
       phone: '(27) 99999-9999',
@@ -34,6 +35,7 @@ describe('lead contracts', () => {
 
     expect(result.success).toBe(true);
     if (result.success) {
+      expect(result.data.eventId).toBe('11111111-1111-4111-8111-111111111111');
       expect(result.data.name).toBe('Maria Silva');
       expect(result.data.email).toBe('maria@example.com');
     }
@@ -71,6 +73,7 @@ describe('lead contracts', () => {
 
   it('accepts the documented successful lead capture response', () => {
     const result = leadCaptureResponseSchema.safeParse({
+      eventId: '11111111-1111-4111-8111-111111111111',
       leadId: 'a5d48df6-a654-4f76-b258-934326bdcadd',
       status: 'CAPTURED',
       checkoutUrl: 'https://www.even3.com.br/dof-update',
@@ -80,4 +83,3 @@ describe('lead contracts', () => {
     expect(result.success).toBe(true);
   });
 });
-
