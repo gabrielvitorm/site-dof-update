@@ -14,7 +14,8 @@ describe('API configuration', () => {
   });
 
   it('builds the database URL from PostgreSQL service variables when needed', () => {
-    const { DATABASE_URL: _databaseUrl, ...envWithoutUrl } = baseEnv();
+    const envWithoutUrl = baseEnv();
+    delete envWithoutUrl.DATABASE_URL;
     const config = loadConfig({
       ...envWithoutUrl,
       POSTGRES_HOST: 'dofupdate-db',
