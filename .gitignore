@@ -8,3 +8,4 @@ packages/*/dist/
 npm-debug.log*
 *.tsbuildinfo
 tmp-screenshots/
+.superpowers/
