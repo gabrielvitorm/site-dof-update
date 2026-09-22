@@ -7,7 +7,7 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc -p tsconfig.json && npm run build:runtime && npm run build:migrations",
-    "build:runtime": "esbuild src/server.ts --bundle --platform=node --target=node22 --format=esm --outfile=dist/server.js --external:fastify --external:pg --external:pg-native",
+    "build:runtime": "esbuild src/server.ts --bundle --platform=node --target=node22 --format=esm --outfile=dist/server.js --external:fastify --external:@fastify/static --external:pg --external:pg-native",
     "build:migrations": "mkdir -p dist/db/migrations && cp src/db/migrations/*.sql dist/db/migrations/",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
