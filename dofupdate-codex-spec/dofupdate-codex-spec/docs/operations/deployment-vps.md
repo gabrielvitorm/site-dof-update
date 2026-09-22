@@ -16,7 +16,10 @@ Recommended:
 Frontend may be built in CI and served as static files by Nginx, or built by a dedicated image stage.
 
 ## Required environment variables
-See root `.env.example`.
+See root `.env.example`. Meta CAPI variables are backend-only: set
+`META_CAPI_ENABLED=true`, `META_PIXEL_ID`, and
+`META_CAPI_ACCESS_TOKEN` in the production runtime environment. Never expose
+the access token through a `VITE_*` variable or the React bundle.
 
 ## Nginx requirements
 - redirect port 80 to 443;
@@ -33,10 +36,10 @@ See root `.env.example`.
 1. Backup DB.
 2. Pull/build versioned images.
 3. Run DB migrations as one controlled step.
-4. Start API and verify `/health` internally.
+4. Start the `api` service on port `3001` and verify `/health` internally.
 5. Start/update Nginx/frontend.
 6. Run smoke test against public domain.
-7. Verify tracking test events.
+7. Submit a controlled lead test and verify a row in `leads`, a `LEAD_CAPTURED` row in `lead_events`, and one Meta CAPI event using the same `event_id` as the browser Pixel event.
 8. Verify Even3 webhook endpoint with a controlled event when possible.
 9. Tag release.
 

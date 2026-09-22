@@ -44,6 +44,11 @@ services:
       N8N_INTERNAL_TOKEN: "${N8N_INTERNAL_TOKEN}"
       LOG_LEVEL: "${LOG_LEVEL:-info}"
       PII_LOG_MASKING: "${PII_LOG_MASKING:-true}"
+      META_CAPI_ENABLED: "${META_CAPI_ENABLED:-false}"
+      META_PIXEL_ID: "${META_PIXEL_ID:-}"
+      META_CAPI_ACCESS_TOKEN: "${META_CAPI_ACCESS_TOKEN:-}"
+      META_CAPI_API_VERSION: "${META_CAPI_API_VERSION:-v20.0}"
+      META_CAPI_TIMEOUT_MS: "${META_CAPI_TIMEOUT_MS:-1500}"
     depends_on:
       postgres:
         condition: service_healthy
