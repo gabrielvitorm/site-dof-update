@@ -15,6 +15,7 @@ import {
   validateCheckoutForm
 } from './features/checkout/checkout-state';
 import { TicketCarousel } from './features/pricing/TicketCarousel';
+import { SponsorsSection } from './features/partners/SponsorsSection';
 import './styles.css';
 
 export function App() {
@@ -243,6 +244,7 @@ export function App() {
       <PreEventSection />
       <OfferSection analytics={analytics} onOpenCheckoutCapture={openCheckoutCapture} />
       <LocationSection analytics={analytics} />
+      <SponsorsSection />
       <FaqSection />
       <FinalCtaSection onScrollToTickets={scrollToTickets} />
       <CheckoutCaptureModal

@@ -114,6 +114,23 @@ describe('DOF Update landing page', () => {
     expect(html).not.toContain('Sheila Farias');
   });
 
+  it('renders the sponsor wall with the three partnership tiers', () => {
+    const html = renderToStaticMarkup(<App />);
+
+    expect(html).toContain('id="sponsors"');
+    expect(html).toContain('class="section sponsors-section sponsors-section-light"');
+    expect(html).toContain('Patrocinadores');
+    expect(html).toContain('Apoio');
+    expect(html).toContain('Realização do evento');
+    expect(html).toContain('alt="Logo Miotec"');
+    expect(html).toContain('alt="Logo Quark"');
+    expect(html).toContain('alt="Logo Dycon"');
+    expect(html).toContain('alt="Logo CRO"');
+    expect(html).toContain('alt="Logo Abrafito"');
+    expect(html).toContain('alt="Logo Crefito"');
+    expect(html).toContain('alt="Logo Ufes"');
+  });
+
   it('renders the mini-capture modal with accessible labels and approved copy when open', () => {
     const html = renderToStaticMarkup(
       <CheckoutCaptureModal

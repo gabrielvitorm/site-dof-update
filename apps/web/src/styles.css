@@ -484,6 +484,91 @@ details {
   font-weight: 800;
 }
 
+.sponsors-section {
+  background: #fff;
+}
+
+.sponsor-groups {
+  display: grid;
+  gap: 42px;
+}
+
+.sponsor-group h3 {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 0 0 18px;
+  color: #171717;
+  font-size: 1.15rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.sponsor-group h3::after {
+  height: 1px;
+  flex: 1;
+  background: rgba(23, 23, 23, 0.14);
+  content: '';
+}
+
+.sponsor-group-primary h3 {
+  color: #8b1824;
+}
+
+.sponsor-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.sponsor-group-secondary .sponsor-grid {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.sponsor-group-tertiary .sponsor-grid {
+  grid-template-columns: repeat(2, minmax(0, 240px));
+}
+
+.sponsor-card {
+  display: grid;
+  min-height: 142px;
+  place-items: center;
+  border: 1px solid rgba(23, 23, 23, 0.1);
+  border-radius: 8px;
+  padding: 18px;
+  background: #fff;
+  box-shadow: 0 10px 28px rgba(23, 23, 23, 0.04);
+}
+
+.sponsor-card-dark {
+  background: #fff;
+}
+
+.sponsor-group-primary .sponsor-card {
+  min-height: 164px;
+  border-color: rgba(201, 24, 43, 0.16);
+}
+
+.sponsor-card img {
+  display: block;
+  width: 100%;
+  max-width: 210px;
+  height: 104px;
+  object-fit: contain;
+}
+
+.sponsor-wordmark {
+  color: #1f4d82;
+  font-size: clamp(1.2rem, 2vw, 1.7rem);
+  font-weight: 850;
+  letter-spacing: -0.04em;
+}
+
+.sponsor-group-primary .sponsor-card img {
+  max-width: 230px;
+  height: 118px;
+}
+
 .section-pre-event {
   background:
     linear-gradient(180deg, rgba(201, 24, 43, 0.06), transparent 180px),
@@ -996,7 +1081,9 @@ details {
   .feature-grid,
   .audience-grid,
   .speaker-grid,
-  .line-list {
+  .line-list,
+  .sponsor-grid,
+  .sponsor-group-secondary .sponsor-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
@@ -1049,8 +1136,14 @@ details {
   .audience-grid,
   .speaker-grid,
   .line-list,
+  .sponsor-grid,
+  .sponsor-group-secondary .sponsor-grid,
   .workshop-grid,
   .guest-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sponsor-group-tertiary .sponsor-grid {
     grid-template-columns: 1fr;
   }
 
