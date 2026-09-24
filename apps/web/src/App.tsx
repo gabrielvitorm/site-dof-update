@@ -335,17 +335,26 @@ function ProgramSection() {
               <h3>{period.label}</h3>
             </header>
             <div className="program-talk-list">
-              {period.talks.map((talk) => (
-                <div className="program-talk" key={`${talk.speaker}-${talk.topic}`}>
-                  <h4>{talk.speaker}</h4>
-                  <p className="program-talk-topic">{talk.topic}</p>
-                  <span className="program-talk-profession">{talk.profession}</span>
-                </div>
-              ))}
+              {period.items.map((item) =>
+                item.kind === 'break' ? (
+                  <div className="program-break" key={`${item.time}-${item.label}`}>
+                    <span>{item.time}</span>
+                    <strong>{item.label}</strong>
+                  </div>
+                ) : (
+                  <div className="program-talk" key={`${item.time}-${item.speaker}`}>
+                    <span className="program-talk-time">{item.time}</span>
+                    <h4>{item.speaker}</h4>
+                    <p className="program-talk-topic">{item.topic}</p>
+                    <span className="program-talk-profession">{item.profession}</span>
+                  </div>
+                )
+              )}
             </div>
           </article>
         ))}
       </div>
+      <p className="program-closing">{mainProgram.closing}</p>
     </section>
   );
 }

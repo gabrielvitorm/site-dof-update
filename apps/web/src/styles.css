@@ -404,6 +404,42 @@ details {
   font-size: 1.08rem;
 }
 
+.program-talk-time,
+.program-break span,
+.program-closing {
+  color: #ff8f9c;
+  font-size: 0.86rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.program-talk-time {
+  display: inline-block;
+  margin-bottom: 8px;
+}
+
+.program-break {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  align-items: center;
+  margin: 8px 0;
+  border: 1px solid rgba(255, 143, 156, 0.28);
+  border-radius: 6px;
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.program-break strong {
+  color: #fff;
+  font-size: 0.94rem;
+}
+
+.program-closing {
+  margin: 26px 0 0;
+  text-align: right;
+}
+
 .program-talk-topic {
   margin: 0 0 8px;
   line-height: 1.55;

@@ -78,6 +78,15 @@ describe('DOF Update landing page', () => {
     expect(html).toContain('Credenciamento: 07h30');
     expect(html).toContain('Abertura: 08h00');
     expect(html).toContain('Encerramento: 18h45');
+    expect(html).toContain('08h05 – 08h50');
+    expect(html).toContain('09h35 – 10h00');
+    expect(html).toContain('Apresentação dos Pôsteres');
+    expect(html).toContain('10h00 – 10h30');
+    expect(html).toContain('Coffee Break');
+    expect(html).toContain('12h00 – 12h15');
+    expect(html).toContain('14h05 – 14h50');
+    expect(html).toContain('16h05 – 16h45');
+    expect(html).toContain('18h45 – Encerramento');
     expect(html).toContain('Raí Santiago');
     expect(html).toContain('Gabriela Vendolin');
     expect(html).toContain('Thays Crosara');

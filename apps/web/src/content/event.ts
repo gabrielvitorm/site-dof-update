@@ -9,15 +9,25 @@ export interface ScientificPillar {
   focus: string;
 }
 
-export interface TalkItem {
+export interface ProgramTalk {
+  kind: 'talk';
+  time: string;
   speaker: string;
   profession: string;
   topic: string;
 }
 
+export interface ProgramBreak {
+  kind: 'break';
+  time: string;
+  label: string;
+}
+
+export type ProgramItem = ProgramTalk | ProgramBreak;
+
 export interface ProgramPeriod {
   label: 'Manhã' | 'Tarde';
-  talks: TalkItem[];
+  items: ProgramItem[];
 }
 
 export interface MainProgram {
@@ -27,6 +37,7 @@ export interface MainProgram {
   venue: string;
   description: string;
   milestones: string[];
+  closing: string;
   periods: ProgramPeriod[];
 }
 
@@ -269,65 +280,101 @@ export const eventContent = {
     description:
       'Um dia inteiro de atualização científica e discussão clínica com profissionais de diferentes especialidades reunidos em torno da DTM, dor orofacial, sono e cuidado interprofissional.',
     milestones: ['Credenciamento: 07h30', 'Abertura: 08h00', 'Encerramento: 18h45'],
+    closing: '18h45 – Encerramento',
     periods: [
       {
         label: 'Manhã',
-        talks: [
+        items: [
           {
+            kind: 'talk',
+            time: '08h05 – 08h50',
             speaker: 'Raí Santiago',
             profession: 'Fonoaudiólogo',
             topic:
               'Dor orofacial e DTM: o papel da fonoaudiologia na avaliação e reabilitação funcional'
           },
           {
+            kind: 'talk',
+            time: '08h50 – 09h35',
             speaker: 'Gabriela Vendolin',
             profession: 'Cirurgiã-dentista',
             topic: 'DTM: passado, presente e futuro — da ciência à tomada de decisão clínica'
           },
           {
+            kind: 'break',
+            time: '09h35 – 10h00',
+            label: 'Apresentação dos Pôsteres'
+          },
+          {
+            kind: 'break',
+            time: '10h00 – 10h30',
+            label: 'Coffee Break'
+          },
+          {
+            kind: 'talk',
+            time: '10h30 – 11h15',
             speaker: 'Thays Crosara',
             profession: 'Cirurgiã-dentista',
             topic: 'Sono, DTM e dor orofacial — fundamentos para a prática clínica'
           },
           {
+            kind: 'talk',
+            time: '11h15 – 12h00',
             speaker: 'Juliana Stuginski',
             profession: 'Cirurgiã-dentista',
             topic: 'IA na rotina clínica de DTM e Dor Orofacial'
+          },
+          {
+            kind: 'talk',
+            time: '12h00 – 12h15',
+            speaker: 'Nídia Marinho',
+            profession: 'Cirurgiã-dentista',
+            topic: 'Remodelação ou degeneração? O que a tomografia nos conta sobre a ATM'
           }
         ]
       },
       {
         label: 'Tarde',
-        talks: [
+        items: [
           {
-            speaker: 'Márcia Targino',
-            profession: 'Fisioterapeuta',
-            topic: 'Trismo no câncer de cabeça e pescoço'
-          },
-          {
+            kind: 'talk',
+            time: '14h05 – 14h50',
             speaker: 'Roberto Garanhani',
             profession: 'Cirurgião-dentista',
             topic: 'Bruxismo, placa e DTM: como, quando e por quê?'
           },
           {
+            kind: 'talk',
+            time: '14h50 – 15h35',
+            speaker: 'Márcia Targino',
+            profession: 'Fisioterapeuta',
+            topic: 'Trismo no câncer de cabeça e pescoço'
+          },
+          {
+            kind: 'talk',
+            time: '15h35 – 16h05',
             speaker: 'Guacyra Muzzi',
             profession: 'Médica',
             topic: 'Dores orofaciais persistentes: da terapia farmacológica à intervenção'
           },
           {
+            kind: 'break',
+            time: '16h05 – 16h45',
+            label: 'Coffee Break'
+          },
+          {
+            kind: 'talk',
+            time: '16h50 – 17h35',
             speaker: 'Thiago Motta',
             profession: 'Fisioterapeuta',
             topic: 'Influência da coluna cervical nas DTMs: onde estamos?'
           },
           {
+            kind: 'talk',
+            time: '17h35 – 18h00',
             speaker: 'Bruna Cabugueira',
             profession: 'Fisioterapeuta',
             topic: 'Zumbido e DTM: conexões neurofuncionais e caminhos terapêuticos'
-          },
-          {
-            speaker: 'Nídia Marinho',
-            profession: 'Cirurgiã-dentista',
-            topic: 'Remodelação ou degeneração? O que a tomografia nos conta sobre a ATM'
           }
         ]
       }
